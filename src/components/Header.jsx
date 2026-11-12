@@ -1,22 +1,28 @@
 import { Link } from "react-router-dom";
-import { IoCartOutline } from "react-icons/io5";
-import { FaRegUser } from "react-icons/fa6";
+
+const enlaceNav =
+  "rounded text-stone-800 hover:text-amber-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-700";
 
 export default function Header() {
   return (
-    <header className="flex justify-between py-5 px-10">
-      <div>
-        <span className="font-bold text-xl">Luthier &amp; Co.</span>
-      </div>
-      <nav className="flex gap-4">
-        <Link to="/" className="text-stone-800 hover:text-amber-700 transition-colors">Inicio</Link>
-        <Link to="/contacto" className="text-stone-800 hover:text-amber-700 transition-colors">Contacto</Link>
-        <Link to="/acerca" className="text-stone-800 hover:text-amber-700 transition-colors">Acerca</Link>
+    <header className="flex items-center justify-between py-5 px-10">
+      <Link
+        to="/"
+        className="rounded font-bold text-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-700"
+      >
+        Luthier &amp; Co.
+      </Link>
+      <nav aria-label="Navegación principal" className="flex gap-4">
+        <Link to="/" className={enlaceNav}>
+          Inicio
+        </Link>
+        <Link to="/contacto" className={enlaceNav}>
+          Contacto
+        </Link>
+        <Link to="/acerca" className={enlaceNav}>
+          Acerca
+        </Link>
       </nav>
-      <div className="flex items-center gap-2">
-        <IoCartOutline className="text-2xl" />
-        <FaRegUser className="text-2xl" />
-      </div>
     </header>
   );
 }
