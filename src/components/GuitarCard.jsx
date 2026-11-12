@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
+
 export default function GuitarCard({ guitarra }) {
   return (
-    <Link to={`/producto/${guitarra.id}`}>
+    <Link
+      to={`/producto/${guitarra.id}`}
+      className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-700"
+    >
       <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
         <div className="relative aspect-4/5 overflow-hidden bg-stone-100">
           <img
@@ -16,9 +20,9 @@ export default function GuitarCard({ guitarra }) {
           )}
         </div>
         <div className="p-6">
-          <h3 className="text-lg font-bold text-stone-800 mb-1">
+          <h2 className="text-lg font-bold text-stone-800 mb-1">
             {guitarra.nombre}
-          </h3>
+          </h2>
           <p className="text-base text-stone-600 mb-4">{guitarra.marca}</p>
           <span className="text-xl font-bold text-amber-700">
             {guitarra.precio.toLocaleString()} €

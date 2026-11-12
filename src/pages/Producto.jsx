@@ -8,12 +8,12 @@ export default function Producto() {
   if (!guitarra) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-stone-800">
+        <h1 className="text-2xl font-bold text-stone-800">
           Producto no encontrado
-        </h2>
+        </h1>
         <Link
           to="/catalogo"
-          className="text-amber-700 underline mt-4 inline-block"
+          className="text-amber-700 underline mt-4 inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-700"
         >
           ← Volver al catálogo
         </Link>
@@ -25,7 +25,7 @@ export default function Producto() {
     <div className="max-w-6xl mx-auto px-6 py-20">
       <Link
         to="/catalogo"
-        className="text-amber-700 underline mt-4 inline-block"
+        className="text-amber-700 underline mt-4 inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-700"
       >
         ← Volver al catálogo
       </Link>
@@ -34,7 +34,7 @@ export default function Producto() {
         <div className="bg-stone-100 rounded-xl overflow-hidden shadow-md">
           <img
             src={guitarra.imagen}
-            alt="Foto de guitarra"
+            alt={`${guitarra.nombre} de ${guitarra.marca}`}
             className="w-full aspect-4/5 object-cover"
           />
         </div>
@@ -51,9 +51,9 @@ export default function Producto() {
             {guitarra.descripcion}
           </p>
           <div className="bg-stone-50 p-6 rounded-xl border border-stone-200">
-            <h3 className="text-sm font-bold text-stone-800 uppercase tracking-wider mb-3">
+            <h2 className="text-sm font-bold text-stone-800 uppercase tracking-wider mb-3">
               Especificaciones
-            </h3>
+            </h2>
             <ul className="flex flex-col gap-2">
               {guitarra?.specs.map((spec) => (
                 <li key={spec} className="flex items-center gap-2 text-sm text-stone-700">
@@ -63,7 +63,7 @@ export default function Producto() {
               ))}
             </ul>
           </div>
-          <button className="bg-amber-700 text-amber-50 font-bold py-3 px-6 rounded-lg hover:bg-amber-800 transition-all active:scale-95">
+          <button className="bg-amber-700 text-amber-50 font-bold py-3 px-6 rounded-lg hover:bg-amber-800 transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-stone-800">
             AÑADIR AL CARRITO
           </button>
         </div>
