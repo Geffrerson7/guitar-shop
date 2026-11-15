@@ -2,7 +2,8 @@
 
 A boutique guitar storefront built with React 19 and Vite. It is a single-page
 application with a catalog of instruments, a product detail view and the usual
-static pages (home, about, contact, 404).
+static pages (home, about, contact, 404). The storefront brand is **Voltio &
+Madera**.
 
 The interface copy is in Spanish; the codebase and its tooling are documented in
 English.
@@ -47,14 +48,18 @@ The dev server runs on `http://localhost:5173`.
 ```text
 .
 ├── public/                  # Static assets served as-is
+│   └── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
 ├── src/
-│   ├── assets/              # Assets imported by the bundler
 │   ├── components/          # Shared presentational components
+│   │   ├── ui/              # Container, Button, PageTitle and shared styles
+│   │   ├── ErrorBoundary.jsx
 │   │   ├── Footer.jsx
 │   │   ├── GuitarCard.jsx
 │   │   └── Header.jsx
 │   ├── data/                # Local product data
 │   │   └── guitarras.js
+│   ├── hooks/               # Reusable hooks
+│   │   └── useReveal.js
 │   ├── layout/              # Route layout (header + main + footer)
 │   │   └── Layout.jsx
 │   ├── pages/               # Route-level components
@@ -64,11 +69,14 @@ The dev server runs on `http://localhost:5173`.
 │   │   ├── Error404.jsx
 │   │   ├── Home.jsx
 │   │   └── Producto.jsx
+│   ├── utils/               # Shared helpers
+│   │   └── formatPrice.js
 │   ├── App.jsx              # Route definitions
-│   ├── index.css            # Tailwind entry point
+│   ├── index.css            # Tailwind entry, tokens, fonts and motion
 │   └── main.jsx             # Application entry point
 ├── docs/
-│   └── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
+│   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
+│   └── DIRECCION_DE_ARTE.md # Art direction and design system
 ├── eslint.config.js
 └── vite.config.js
 ```
@@ -92,9 +100,28 @@ Because routing is client-side, a production host must rewrite unknown paths to
 - **Language:** domain names in Spanish (`guitarra`, `precio`), infrastructure
   and tooling in English (`getGuitarras`, `formatPrice`).
 - **Components:** one component per file, default export, `PascalCase` filename.
-- **Styling:** Tailwind utilities only; no CSS modules or inline styles.
+- **Styling:** Tailwind utilities only; design tokens live in `@theme` inside
+  `src/index.css` (`paper`, `ink`, `accent`, fluid type scale). No CSS modules
+  or inline styles beyond CSS custom properties for stagger indexes.
+- **Prices:** always through `formatPrice` (`es-ES`, EUR) — never
+  `toLocaleString()` in components.
 - **Data access:** components should not import `src/data` directly once a data
   layer exists; see the roadmap in the audit.
+
+## Design system
+
+The visual direction is documented in
+[`docs/DIRECCION_DE_ARTE.md`](docs/DIRECCION_DE_ARTE.md). In short:
+
+- **Type:** Bodoni Moda (display) + Inter (UI), self-hosted variable woff2
+  subsets in `public/fonts/` (~95 kB total).
+- **Tokens:** warm paper/ink palette, 1 px rules, fluid display scale with
+  `clamp()`, maximum 3 weights.
+- **Layout:** 12-column editorial grid; the catalog alternates 7/5 and 5/7
+  cards instead of a uniform three-up grid.
+- **Motion:** CSS plus `useReveal` (`IntersectionObserver`); only `transform`
+  and `opacity`. `prefers-reduced-motion: reduce` disables every non-essential
+  animation and leaves all content visible.
 
 ## Known technical debt
 
@@ -102,9 +129,10 @@ The current state, findings and phased roadmap live in
 [`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Notable items:
 
 - No automated tests and no CI yet.
-- Product images are remote and unoptimized.
-- SEO metadata is still the Vite template default.
-- Accessibility gaps in the header and footer.
+- Product images are remote and unoptimized (Phase 4).
+- SEO metadata is still the Vite template default (Phase 5).
+- Components still import `src/data` directly; the service layer arrives in
+  Phase 7.
 
 ## License
 

@@ -6,18 +6,21 @@ import Layout from "./layout/Layout";
 import Error404 from "./pages/Error404";
 import Producto from "./pages/Producto";
 import Catalogo from "./pages/Catalogo";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/catalogo" element={<Catalogo />} />
-        <Route path="/contacto" element={<Contactanos />} />
-        <Route path="/acerca" element={<Acerca />} />
-        <Route path="/producto/:id" element={<Producto />} />
-        <Route path="*" element={<Error404 />} />
-      </Route>
-    </Routes>
+    <ErrorBoundary>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/catalogo" element={<Catalogo />} />
+          <Route path="/contacto" element={<Contactanos />} />
+          <Route path="/acerca" element={<Acerca />} />
+          <Route path="/producto/:id" element={<Producto />} />
+          <Route path="*" element={<Error404 />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
   );
 }

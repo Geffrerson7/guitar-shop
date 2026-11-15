@@ -1,13 +1,36 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import Container from "../components/ui/Container";
+import { buttonClasses } from "../components/ui/buttonStyles";
 
 export default function Error404() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-      <h1 className="text-7xl font-bold text-amber-700 mb-4">404</h1>
-      <p className="text-xl text-stone-600 mb-8">Página no encontrada</p>
-      
-      <img src="https://cataas.com/cat" alt="imagen aleatoria de un gato" className="rounded-2xl w-64 mb-5"/>
-      <Link to="/" className="text-amber-50 bg-amber-700 hover:bg-amber-800 text-lg py-2 px-6 rounded-2xl">Ir al inicio</Link>
-    </div>
-  )
+    <section className="flex min-h-[70svh] items-center py-20">
+      <Container>
+        <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">
+          Error 404
+        </p>
+        <p
+          aria-hidden="true"
+          className="mb-8 font-sans text-[clamp(6rem,24vw,18rem)] leading-[0.8] font-semibold tracking-[-0.06em] text-ink/15"
+        >
+          404
+        </p>
+        <h1 className="mt-2 font-display text-h1 text-balance text-ink">
+          Esta pieza no está en el catálogo.
+        </h1>
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
+          La página que buscas no existe o ha cambiado de sitio. Vuelve al
+          inicio o explora los instrumentos que sí están en el taller.
+        </p>
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <Link to="/" className={buttonClasses("solid")}>
+            Ir al inicio
+          </Link>
+          <Link to="/catalogo" className={buttonClasses("outline")}>
+            Ver el catálogo
+          </Link>
+        </div>
+      </Container>
+    </section>
+  );
 }
