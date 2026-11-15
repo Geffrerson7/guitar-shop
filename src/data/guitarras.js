@@ -24,7 +24,7 @@ export const guitarras = [
   {
     id: 3,
     nombre: 'OM-Series Artisan',
-    marca: 'Luthier & Co.',
+    marca: 'Voltio & Madera',
     precio: 3100,
     categoria: 'Acústicas',
     badge: null,

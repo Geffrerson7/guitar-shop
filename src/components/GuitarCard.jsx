@@ -1,34 +1,63 @@
 import { Link } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice";
 
-export default function GuitarCard({ guitarra }) {
+function formatIndex(index) {
+  return String(index + 1).padStart(2, "0");
+}
+
+export default function GuitarCard({ guitarra, index = 0, wide = false }) {
   return (
     <Link
       to={`/producto/${guitarra.id}`}
-      className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-700"
+      className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
     >
-      <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-        <div className="relative aspect-4/5 overflow-hidden bg-stone-100">
+      <article>
+        <div
+          className={`relative overflow-hidden rounded-2xl border border-line/70 bg-paper-deep ${
+            wide ? "aspect-[16/11]" : "aspect-[4/5]"
+          }`}
+        >
           <img
             src={guitarra.imagen}
-            alt={guitarra.nombre}
-            className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+            alt={`${guitarra.nombre} — ${guitarra.marca}`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
           />
+
+          <span className="absolute top-4 left-4 rounded-full bg-paper/90 px-3 py-1 text-sm font-medium tracking-[0.16em] text-ink">
+            {formatIndex(index)}
+          </span>
+
           {guitarra.badge && (
-            <span className="absolute top-3 left-3 bg-stone-800 text-amber-50 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest">
+            <span className="absolute top-4 right-4 rounded-full bg-ink/90 px-3 py-1 text-sm uppercase tracking-[0.16em] text-paper">
               {guitarra.badge}
             </span>
           )}
-        </div>
-        <div className="p-6">
-          <h2 className="text-lg font-bold text-stone-800 mb-1">
-            {guitarra.nombre}
-          </h2>
-          <p className="text-base text-stone-600 mb-4">{guitarra.marca}</p>
-          <span className="text-xl font-bold text-amber-700">
-            {guitarra.precio.toLocaleString()} €
+
+          <span className="absolute right-4 bottom-4 translate-y-2 rounded-full bg-paper px-4 py-2 text-sm font-medium uppercase tracking-[0.14em] text-ink opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            Ver pieza →
           </span>
         </div>
-      </div>
+
+        <div className="flex items-start justify-between gap-6 border-b border-line/80 py-5">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent transition-transform duration-300 group-hover:-translate-y-0.5">
+              {guitarra.marca}
+            </p>
+            <h2
+              className={`mt-1 font-display leading-tight text-ink ${
+                wide ? "text-3xl" : "text-2xl"
+              }`}
+            >
+              {guitarra.nombre}
+            </h2>
+          </div>
+          <p className="shrink-0 font-display text-xl text-ink transition-transform duration-300 group-hover:-translate-y-0.5">
+            {formatPrice(guitarra.precio)}
+          </p>
+        </div>
+      </article>
     </Link>
   );
 }
