@@ -37,3 +37,8 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+
+# Testing
+/playwright-report/
+/test-results/
+/coverage/

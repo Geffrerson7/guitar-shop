@@ -45,7 +45,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Sin JavaScript el reveal on scroll no se activa: el contenido
             renderizado en servidor debe verse igualmente. */}
         <noscript>
-          <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
+          <style>
+            {"[data-reveal]{opacity:1!important;transform:none!important}"}
+          </style>
         </noscript>
         <div className="flex min-h-screen flex-col bg-paper text-ink">
           <a

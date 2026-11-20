@@ -17,6 +17,7 @@ export default function NotFound() {
         </p>
         <p
           aria-hidden="true"
+          data-decorativo=""
           className="mb-8 font-sans text-[clamp(6rem,24vw,18rem)] leading-[0.8] font-semibold tracking-[-0.06em] text-ink/15"
         >
           404

@@ -1,0 +1,9 @@
+pnpm-lock.yaml
+.next/
+node_modules/
+playwright-report/
+test-results/
+next-env.d.ts
+# Documentación de trabajo fuera del repositorio
+docs/
+prompt-*.md

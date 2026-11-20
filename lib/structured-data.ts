@@ -41,5 +41,5 @@ export function productJsonLd(guitarra: Guitarra) {
  * `<` para que un texto con `</script>` no pueda cerrar la etiqueta.
  */
 export function serializeJsonLd(data: unknown): string {
-  return JSON.stringify(data).replace(/</g, "\u003c");
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }

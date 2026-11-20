@@ -10,11 +10,13 @@
  * La validación estricta de variables de entorno llega en la Fase 8 (src/env.ts).
  */
 
-function resolveSiteUrl(): URL {
-  const explicit = process.env.SITE_URL;
+export function resolveSiteUrl(
+  env: Record<string, string | undefined> = process.env,
+): URL {
+  const explicit = env.SITE_URL;
   if (explicit) return new URL(explicit);
 
-  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const vercel = env.VERCEL_PROJECT_PRODUCTION_URL;
   if (vercel) return new URL(`https://${vercel}`);
 
   return new URL("http://localhost:3000");
