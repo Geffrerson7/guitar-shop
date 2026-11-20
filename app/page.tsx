@@ -5,6 +5,7 @@ import { staggerStyle } from "@/utils/stagger";
 import Container from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/buttonStyles";
 import GuitarCard from "@/components/GuitarCard";
+import ProductImage, { imageSizes } from "@/components/ProductImage";
 import Reveal from "@/components/Reveal";
 import type { Guitarra } from "@/types/guitarra";
 
@@ -53,11 +54,13 @@ export default async function Home() {
           {hero && (
             <div className="lg:col-span-5">
               <figure className="relative">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
-                  <img
+                {/* A sangre en móvil y tableta; tarjeta de 5 columnas en escritorio. */}
+                <div className="relative -mx-5 aspect-[4/5] overflow-hidden bg-paper-deep sm:-mx-8 lg:mx-0 lg:rounded-[2rem] lg:border lg:border-line/80">
+                  <ProductImage
                     src={hero.imagen}
                     alt={`${hero.nombre} — ${hero.marca}`}
-                    className="h-full w-full object-cover"
+                    sizes={imageSizes.hero}
+                    lcp
                   />
                   <span className="absolute top-5 left-5 rounded-full bg-paper/90 px-4 py-1.5 text-sm font-medium uppercase tracking-[0.18em] text-ink">
                     Pieza destacada
@@ -154,7 +157,11 @@ export default async function Home() {
                 className="stagger-item"
                 style={staggerStyle(index)}
               >
-                <GuitarCard guitarra={guitarra} index={guitarra.id - 1} />
+                <GuitarCard
+                  guitarra={guitarra}
+                  index={guitarra.id - 1}
+                  sizes={imageSizes.cardThird}
+                />
               </div>
             ))}
           </div>

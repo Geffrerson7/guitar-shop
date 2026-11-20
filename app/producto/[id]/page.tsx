@@ -5,6 +5,7 @@ import { getGuitarraById, getGuitarras } from "@/lib/guitarras";
 import { formatPrice } from "@/utils/formatPrice";
 import Container from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/buttonStyles";
+import ProductImage, { imageSizes } from "@/components/ProductImage";
 
 const enlaceVolver =
   "inline-flex items-center gap-2 rounded-sm text-sm font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-accent";
@@ -64,11 +65,13 @@ export default async function Producto({
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-7">
             <figure>
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
-                <img
+              {/* A sangre en móvil y tableta; 7 columnas en escritorio. */}
+              <div className="relative -mx-5 aspect-[4/5] overflow-hidden bg-paper-deep sm:-mx-8 lg:mx-0 lg:rounded-[2rem] lg:border lg:border-line/80">
+                <ProductImage
                   src={guitarra.imagen}
                   alt={`${guitarra.nombre} — ${guitarra.marca}`}
-                  className="h-full w-full object-cover"
+                  sizes={imageSizes.detail}
+                  lcp
                 />
                 {guitarra.badge && (
                   <span className="absolute top-6 left-6 rounded-full bg-paper/90 px-4 py-1.5 text-sm uppercase tracking-[0.16em] text-ink">

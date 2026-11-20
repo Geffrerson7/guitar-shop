@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import ErrorFallback from "@/components/ErrorFallback";
+import { bodoniModa, inter } from "@/lib/fonts";
 import "./globals.css";
 
 // Sustituye al layout raíz cuando el error ocurre en él: necesita su propio
@@ -18,7 +19,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="es">
+    <html lang="es" className={`${bodoniModa.variable} ${inter.variable}`}>
       <body>
         <main id="contenido" className="min-h-screen bg-paper text-ink">
           <ErrorFallback onRetry={retry} />

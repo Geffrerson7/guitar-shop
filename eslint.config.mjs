@@ -10,8 +10,6 @@ export default defineConfig([
       // Fase 7: sin `any` explícito ni supresiones de tipos.
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/ban-ts-comment": "error",
-      // Las imágenes siguen siendo <img> remotas hasta la Fase 4 (next/image).
-      "@next/next/no-img-element": "off",
     },
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),

@@ -50,6 +50,7 @@ export default async function Catalogo() {
                   guitarra={guitarra}
                   index={index}
                   wide={index % 4 === 0 || index % 4 === 3}
+                  lcp={index === 0}
                 />
               </div>
             ))}
