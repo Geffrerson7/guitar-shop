@@ -1,0 +1,44 @@
+// Esquema de la base de datos (Fase 8). La conexión no se declara aquí:
+// la URL vive en prisma.config.ts (CLI) y en lib/prisma.ts (aplicación,
+// mediante el driver adapter de PostgreSQL).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique
+  slug      String     @unique
+  productos Producto[]
+}
+
+model Producto {
+  id             Int       @id @default(autoincrement())
+  slug           String    @unique
+  nombre         String
+  marca          String
+  descripcion    String
+  /// Precio en céntimos de euro. Entero: sin errores de redondeo y
+  /// serializable tal cual en la frontera servidor → cliente.
+  precioCentimos Int
+  /// Ruta pública (`/guitarras/…`) o URL remota (Cloudinary, Fase 13).
+  imagen         String
+  specs          String[]
+  /// Etiqueta editorial opcional ("Nuevo", "Vintage"…).
+  badge          String?
+  stock          Int       @default(0)
+  activo         Boolean   @default(true)
+  categoriaId    Int
+  categoria      Categoria @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  creadoEn       DateTime  @default(now())
+  actualizadoEn  DateTime  @updatedAt
+
+  @@index([categoriaId])
+  @@index([activo])
+}

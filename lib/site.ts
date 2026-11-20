@@ -7,7 +7,7 @@
  *   2. VERCEL_PROJECT_PRODUCTION_URL — dominio de producción si se despliega
  *      en Vercel y aún no se ha definido SITE_URL.
  *   3. http://localhost:3000 — desarrollo local.
- * La validación estricta de variables de entorno llega en la Fase 8 (src/env.ts).
+ * El formato de SITE_URL se valida al arrancar en env.ts (Fase 8).
  */
 
 export function resolveSiteUrl(

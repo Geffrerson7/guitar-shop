@@ -42,3 +42,6 @@ yarn.lock
 /playwright-report/
 /test-results/
 /coverage/
+
+# Prisma Client generado (prisma generate, en postinstall)
+/generated/

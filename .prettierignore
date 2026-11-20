@@ -7,3 +7,5 @@ next-env.d.ts
 # Documentación de trabajo fuera del repositorio
 docs/
 prompt-*.md
+generated/
+prisma/migrations/
