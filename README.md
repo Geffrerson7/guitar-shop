@@ -20,6 +20,9 @@ English.
 | UI        | React 19 — Server Components by default                      |
 | Styling   | Tailwind CSS 4 (via `@tailwindcss/postcss`)                  |
 | Linting   | ESLint 10 flat config with `eslint-config-next` (+ TS rules) |
+| Format    | Prettier 3 (`eslint-config-prettier`), LF line endings       |
+| Testing   | Vitest + Testing Library (unit), Playwright + axe (e2e)      |
+| CI        | GitHub Actions (`.github/workflows/ci.yml`)                  |
 | Hosting   | Vercel for now — no platform-only APIs (see below)           |
 
 ## Requirements
@@ -48,13 +51,55 @@ local development.
 
 ## Scripts
 
-| Command          | Description                                  |
-| ---------------- | -------------------------------------------- |
-| `pnpm dev`       | Start the Next.js dev server                 |
-| `pnpm build`     | Production build into `.next/`               |
-| `pnpm start`     | Serve the production build (any Node server) |
-| `pnpm lint`      | Run ESLint over the whole project            |
-| `pnpm typecheck` | Generate route types and run `tsc --noEmit`  |
+| Command             | Description                                  |
+| ------------------- | -------------------------------------------- |
+| `pnpm dev`          | Start the Next.js dev server                 |
+| `pnpm build`        | Production build into `.next/`               |
+| `pnpm start`        | Serve the production build (any Node server) |
+| `pnpm lint`         | Run ESLint over the whole project            |
+| `pnpm typecheck`    | Generate route types and run `tsc --noEmit`  |
+| `pnpm format`       | Format the project with Prettier             |
+| `pnpm format:check` | Check formatting without writing (CI)        |
+| `pnpm test`         | Run the Vitest unit tests once               |
+| `pnpm test:watch`   | Run Vitest in watch mode                     |
+| `pnpm test:e2e`     | Run Playwright against the production build  |
+
+## Testing
+
+| Layer         | Tool                                        | What it covers                                                                                               | Where                              |
+| ------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| Unit          | Vitest + Testing Library (jsdom)            | Utilities, data layer, site URL, SEO metadata, JSON-LD, client components, `GuitarCard`                      | `**/*.test.ts(x)` next to the code |
+| End to end    | Playwright (desktop and mobile Chrome)      | Catalog, product 200/404, unknown route 404, no-JS rendering, reduced motion, `robots.txt` and `sitemap.xml` | `e2e/smoke.spec.ts`                |
+| Accessibility | axe (`@axe-core/playwright`), WCAG 2.2 A/AA | The 6 public routes; fails on any serious or critical violation                                              | `e2e/a11y.spec.ts`                 |
+
+Async Server Components (the pages) are covered end to end, because Vitest
+cannot render them. Playwright runs against `next start`, not the dev server:
+
+```bash
+pnpm exec playwright install chromium   # once
+pnpm build && pnpm test:e2e
+```
+
+Purely decorative text (`aria-hidden`, exempt from contrast under WCAG 1.4.3)
+is marked with `data-decorativo` and skipped by the axe audit.
+
+Every later phase adds its own tests; they are not left for the end.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every pull request and on pushes to `main`:
+
+1. `pnpm install --frozen-lockfile`
+2. `pnpm format:check`
+3. `pnpm lint`
+4. `pnpm typecheck`
+5. `pnpm test`
+6. `pnpm build`
+7. `pnpm test:e2e` (Chromium cached by Playwright version)
+
+On failure, the Playwright report and traces are uploaded as an artifact. The
+workflow pins pnpm `12.18.0` because `package.json` does not declare
+`packageManager`; keep both aligned.
 
 ## Project structure
 
@@ -87,13 +132,17 @@ local development.
 ├── lib/                     # Data access (getGuitarras…), fonts, site URL, SEO helpers
 ├── types/                   # Domain types (Guitarra, Categoria)
 ├── utils/                   # Pure helpers (formatPrice, staggerStyle)
+├── e2e/                     # Playwright end-to-end and axe tests
+├── .github/workflows/       # CI
 ├── docs/
 │   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
 │   └── DIRECCION_DE_ARTE.md # Art direction and design system
 ├── eslint.config.mjs
 ├── next.config.ts
+├── playwright.config.ts
 ├── postcss.config.mjs
-└── tsconfig.json
+├── tsconfig.json
+└── vitest.config.mts
 ```
 
 ## Routes
@@ -140,7 +189,13 @@ The brand ticker is pure CSS and stays on the server. Pages read data through
 - **Types:** `strict: true`; no explicit `any`, no `@ts-ignore` (both enforced by
   ESLint).
 - **Styling:** Tailwind utilities only; design tokens live in `@theme` inside
-  `app/globals.css` (`paper`, `ink`, `accent`, fluid type scale).
+  `app/globals.css` (`paper`, `ink`, `accent`, fluid type scale). On dark
+  `ink` backgrounds use `accent-light`: `accent` does not reach 3:1 there.
+- **Formatting:** Prettier decides; run `pnpm format` before committing. Line
+  endings are LF everywhere (`.gitattributes`), Windows included.
+- **Cards and links:** a link's accessible name must come from visible text
+  (WCAG 2.5.3). Clickable cards put the link on the title and stretch it with a
+  pseudo-element instead of wrapping the whole card.
 - **Prices:** always through `formatPrice` (`es-ES`, EUR) — never
   `toLocaleString()` in components.
 - **Data access:** async functions in `lib/` (`getGuitarras`,
@@ -208,7 +263,8 @@ See [`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Next up:
 - Product photos are 512×512 sources: enough for cards, too small for
   full-bleed images on desktop (they bleed only on mobile and tablet).
 - Product pages share the site-wide preview image instead of one per product.
-- No automated tests and no CI yet (Phase 6).
+- Branch protection (require green CI before merging) is a repository
+  setting, not code; it has to be enabled on GitHub.
 
 ## License
 
