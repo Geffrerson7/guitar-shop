@@ -83,7 +83,7 @@ export default function GuitarCard({
           </h2>
         </div>
         <p className="shrink-0 font-display text-xl text-ink transition-transform duration-300 group-hover:-translate-y-0.5">
-          {formatPrice(guitarra.precio)}
+          {formatPrice(guitarra.precioCentimos)}
         </p>
       </div>
     </article>

@@ -38,7 +38,7 @@ export async function generateMetadata({
 
   return pageMetadata({
     title: guitarra.nombre,
-    description: `${guitarra.descripcion} ${guitarra.marca}, ${formatPrice(guitarra.precio)}. Ajustada a mano en nuestro taller de Madrid.`,
+    description: `${guitarra.descripcion} ${guitarra.marca}, ${formatPrice(guitarra.precioCentimos)}. Ajustada a mano en nuestro taller de Madrid.`,
     path: `/producto/${guitarra.id}`,
   });
 }
@@ -119,7 +119,7 @@ export default async function Producto({
               </h1>
 
               <p className="mt-8 font-display text-5xl tracking-[-0.03em] text-ink sm:text-6xl">
-                {formatPrice(guitarra.precio)}
+                {formatPrice(guitarra.precioCentimos)}
               </p>
               <p className="mt-2 text-sm text-ink-soft">
                 IVA incluido · Envío asegurado en península

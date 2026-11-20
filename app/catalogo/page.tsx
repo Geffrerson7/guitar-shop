@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getGuitarras } from "@/lib/guitarras";
 import { staggerStyle } from "@/utils/stagger";
 import GuitarCard from "@/components/GuitarCard";
@@ -5,12 +6,24 @@ import Container from "@/components/ui/Container";
 import PageTitle from "@/components/ui/PageTitle";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata({
-  title: "Catálogo",
-  description:
-    "Doce instrumentos de boutique elegidos por su carácter, su construcción y su sonido: eléctricas, acústicas, bajos y amplificación, ajustados a mano en Madrid.",
-  path: "/catalogo",
-});
+/*
+ * La descripción usa el recuento real del catálogo.
+ * Sin `loading.tsx` a propósito: con una consulta a la base de datos dentro
+ * del límite de Suspense, el HTML prerenderizado trae el esqueleto y las
+ * tarjetas solo aparecen cuando un script las intercambia, así que sin
+ * JavaScript el catálogo saldría vacío (lo vigila la prueba de humo
+ * «sin JavaScript»). La página es estática y se regenera en segundo plano,
+ * de modo que el esqueleto tampoco se llegaría a ver.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const guitarras = await getGuitarras();
+
+  return pageMetadata({
+    title: "Catálogo",
+    description: `${guitarras.length} instrumentos de boutique elegidos por su carácter, su construcción y su sonido: eléctricas, acústicas, bajos y amplificación, ajustados a mano en Madrid.`,
+    path: "/catalogo",
+  });
+}
 
 const columnas = [
   "lg:col-span-7",

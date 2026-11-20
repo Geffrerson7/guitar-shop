@@ -83,7 +83,7 @@ export default async function Home() {
                     </p>
                   </div>
                   <p className="shrink-0 font-display text-xl text-ink">
-                    {formatPrice(hero.precio)}
+                    {formatPrice(hero.precioCentimos)}
                   </p>
                 </figcaption>
               </figure>
