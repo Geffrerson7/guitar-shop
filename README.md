@@ -51,22 +51,22 @@ The dev server runs on `http://localhost:3000`.
 
 ```text
 .
+├── app/                     # App Router: one folder per route (routing only)
+│   ├── layout.tsx           # <html lang="es">, skip link, header, <main>, footer
+│   ├── template.tsx         # Per-navigation entry animation
+│   ├── page.tsx             # /
+│   ├── catalogo/            # /catalogo
+│   ├── producto/[id]/       # /producto/:id (+ its own not-found.tsx)
+│   ├── contacto/            # /contacto
+│   ├── acerca/              # /acerca
+│   ├── not-found.tsx        # 404
+│   ├── error.tsx            # Route error boundary (retry)
+│   ├── global-error.tsx     # Root layout error boundary
+│   └── globals.css          # Tailwind entry, tokens, fonts and motion
 ├── public/                  # Static assets served as-is
 │   ├── favicon.svg
 │   └── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
-├── src/
-│   ├── app/                 # App Router: one folder per route
-│   │   ├── layout.tsx       # <html lang="es">, skip link, header, <main>, footer
-│   │   ├── template.tsx     # Per-navigation entry animation
-│   │   ├── page.tsx         # /
-│   │   ├── catalogo/        # /catalogo
-│   │   ├── producto/[id]/   # /producto/:id (+ its own not-found.tsx)
-│   │   ├── contacto/        # /contacto
-│   │   ├── acerca/          # /acerca
-│   │   ├── not-found.tsx    # 404
-│   │   ├── error.tsx        # Route error boundary (retry)
-│   │   ├── global-error.tsx # Root layout error boundary
-│   │   └── globals.css      # Tailwind entry, tokens, fonts and motion
+├── src/                     # Everything that is not routing
 │   ├── components/          # Shared components
 │   │   └── ui/              # Container, Button, PageTitle and shared styles
 │   ├── data/                # Local product data (only read by src/lib)
@@ -104,9 +104,9 @@ browser APIs. Only these files declare `"use client"`:
 
 | File                         | Why                                               |
 | ---------------------------- | ------------------------------------------------- |
-| `components/Header.tsx`      | Active link via `usePathname`                     |
-| `components/Reveal.tsx`      | Reveal on scroll (`IntersectionObserver`)         |
-| `hooks/useReveal.ts`         | Hook used by `Reveal`                             |
+| `src/components/Header.tsx`  | Active link via `usePathname`                     |
+| `src/components/Reveal.tsx`  | Reveal on scroll (`IntersectionObserver`)         |
+| `src/hooks/useReveal.ts`     | Hook used by `Reveal`                             |
 | `app/error.tsx`              | Error boundaries must be Client Components        |
 | `app/global-error.tsx`       | Same, for the root layout                         |
 
@@ -120,11 +120,13 @@ The brand ticker is pure CSS and stays on the server. Pages read data through
   English (`getGuitarras`, `formatPrice`, `staggerStyle`, `Container`). UI copy
   is always Spanish.
 - **Components:** one component per file, default export, `PascalCase` filename.
+- **Folders:** `app/` at the project root holds routing only (pages, layouts,
+  error and not-found files); everything else lives in `src/`.
 - **Imports:** `@/*` maps to `src/*`.
 - **Types:** `strict: true`; no explicit `any`, no `@ts-ignore` (both enforced by
   ESLint).
 - **Styling:** Tailwind utilities only; design tokens live in `@theme` inside
-  `src/app/globals.css` (`paper`, `ink`, `accent`, fluid type scale).
+  `app/globals.css` (`paper`, `ink`, `accent`, fluid type scale).
 - **Prices:** always through `formatPrice` (`es-ES`, EUR) — never
   `toLocaleString()` in components.
 - **Data access:** async functions in `src/lib/` (`getGuitarras`,
