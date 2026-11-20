@@ -5,7 +5,7 @@ describe("capa de datos de guitarras", () => {
   it("devuelve las 12 piezas del catálogo con ids únicos", async () => {
     const guitarras = await getGuitarras();
 
-    expect(guitarras).toHaveLength(12);
+    expect(guitarras).toHaveLength(13); // ROTO A PROPÓSITO: comprobar que el CI falla
     expect(new Set(guitarras.map((g) => g.id)).size).toBe(12);
   });
 
