@@ -1,6 +1,6 @@
-import { useReveal } from "../hooks/useReveal";
-import Container from "../components/ui/Container";
-import PageTitle from "../components/ui/PageTitle";
+import Container from "@/components/ui/Container";
+import PageTitle from "@/components/ui/PageTitle";
+import Reveal from "@/components/Reveal";
 
 const horario = [
   { dias: "Lunes — Viernes", horas: "10:00 — 19:30" },
@@ -11,9 +11,7 @@ const horario = [
 const filaContacto =
   "group flex flex-col gap-1 border-b border-line/80 py-6 transition-colors hover:text-accent sm:flex-row sm:items-baseline sm:justify-between sm:gap-8";
 
-export default function Contactanos() {
-  const detalleRef = useReveal();
-
+export default function Contacto() {
   return (
     <div className="py-16 sm:py-20">
       <Container>
@@ -24,7 +22,7 @@ export default function Contactanos() {
         />
 
         <div className="mt-16 grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-16">
-          <div ref={detalleRef} data-reveal="" className="lg:col-span-7">
+          <Reveal className="lg:col-span-7">
             <ul className="border-t border-line/80">
               <li>
                 <a href="mailto:info@voltioymadera.es" className={filaContacto}>
@@ -82,7 +80,7 @@ export default function Contactanos() {
               Si vienes a probar un instrumento, avísanos antes: preparamos la
               pieza, la ajustamos a tu gusto y te reservamos la sala de prueba.
             </p>
-          </div>
+          </Reveal>
 
           <aside className="lg:col-span-5">
             <div className="rounded-[1.75rem] border border-line/80 bg-paper-deep/60 p-8 sm:p-10">

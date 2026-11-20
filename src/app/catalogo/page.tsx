@@ -1,7 +1,8 @@
-import { guitarras } from "../data/guitarras";
-import GuitarCard from "../components/GuitarCard";
-import Container from "../components/ui/Container";
-import PageTitle from "../components/ui/PageTitle";
+import { getGuitarras } from "@/lib/guitarras";
+import { staggerStyle } from "@/utils/stagger";
+import GuitarCard from "@/components/GuitarCard";
+import Container from "@/components/ui/Container";
+import PageTitle from "@/components/ui/PageTitle";
 
 const columnas = [
   "lg:col-span-7",
@@ -10,7 +11,9 @@ const columnas = [
   "lg:col-span-7 lg:mt-16",
 ];
 
-export default function Catalogo() {
+export default async function Catalogo() {
+  const guitarras = await getGuitarras();
+
   return (
     <div className="py-16 sm:py-20">
       <Container>
@@ -41,7 +44,7 @@ export default function Catalogo() {
               <div
                 key={guitarra.id}
                 className={`stagger-item md:col-span-1 ${columnas[index % columnas.length]}`}
-                style={{ "--stagger": index }}
+                style={staggerStyle(index)}
               >
                 <GuitarCard
                   guitarra={guitarra}

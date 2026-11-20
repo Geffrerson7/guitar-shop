@@ -1,14 +1,25 @@
-import { Link } from "react-router-dom";
-import { formatPrice } from "../utils/formatPrice";
+import Link from "next/link";
+import type { Guitarra } from "@/types/guitarra";
+import { formatPrice } from "@/utils/formatPrice";
 
-function formatIndex(index) {
+function formatIndex(index: number): string {
   return String(index + 1).padStart(2, "0");
 }
 
-export default function GuitarCard({ guitarra, index = 0, wide = false }) {
+type GuitarCardProps = {
+  guitarra: Guitarra;
+  index?: number;
+  wide?: boolean;
+};
+
+export default function GuitarCard({
+  guitarra,
+  index = 0,
+  wide = false,
+}: GuitarCardProps) {
   return (
     <Link
-      to={`/producto/${guitarra.id}`}
+      href={`/producto/${guitarra.id}`}
       className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
     >
       <article>

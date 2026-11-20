@@ -1,23 +1,26 @@
 # GUITAR-SHOP
 
-A boutique guitar storefront built with React 19 and Vite. It is a single-page
-application with a catalog of instruments, a product detail view and the usual
-static pages (home, about, contact, 404). The storefront brand is **Voltio &
-Madera**.
+A boutique guitar storefront built with Next.js (App Router) and TypeScript.
+It has a catalog of instruments, a product detail view and the usual static
+pages (home, about, contact, 404). The storefront brand is **Voltio & Madera**.
+
+The project is evolving into a portfolio e-commerce platform (database, cart,
+simulated checkout, admin panel). The roadmap lives in
+[`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md).
 
 The interface copy is in Spanish; the codebase and its tooling are documented in
 English.
 
 ## Stack
 
-| Layer      | Technology                                   |
-| ---------- | -------------------------------------------- |
-| UI         | React 19 (JavaScript, JSX)                   |
-| Build      | Vite 8                                       |
-| Routing    | React Router DOM 7 (`BrowserRouter` + `Routes`) |
-| Styling    | Tailwind CSS 4 (via `@tailwindcss/vite`)     |
-| Icons      | React Icons                                  |
-| Linting    | ESLint 10 (flat config)                      |
+| Layer      | Technology                                                  |
+| ---------- | ----------------------------------------------------------- |
+| Framework  | Next.js 16 (App Router, Turbopack)                          |
+| Language   | TypeScript 6 (`strict`, no explicit `any`)                  |
+| UI         | React 19 — Server Components by default                     |
+| Styling    | Tailwind CSS 4 (via `@tailwindcss/postcss`)                 |
+| Linting    | ESLint 10 flat config with `eslint-config-next` (+ TS rules) |
+| Hosting    | Vercel for now — no platform-only APIs (see below)          |
 
 ## Requirements
 
@@ -32,81 +35,107 @@ pnpm install
 pnpm dev
 ```
 
-The dev server runs on `http://localhost:5173`.
+The dev server runs on `http://localhost:3000`.
 
 ## Scripts
 
-| Command        | Description                        |
-| -------------- | ---------------------------------- |
-| `pnpm dev`     | Start the Vite dev server with HMR |
-| `pnpm build`   | Build for production into `dist/`  |
-| `pnpm preview` | Serve the production build locally |
-| `pnpm lint`    | Run ESLint over the whole project  |
+| Command          | Description                                          |
+| ---------------- | ---------------------------------------------------- |
+| `pnpm dev`       | Start the Next.js dev server                         |
+| `pnpm build`     | Production build into `.next/`                       |
+| `pnpm start`     | Serve the production build (any Node server)         |
+| `pnpm lint`      | Run ESLint over the whole project                    |
+| `pnpm typecheck` | Generate route types and run `tsc --noEmit`          |
 
 ## Project structure
 
 ```text
 .
 ├── public/                  # Static assets served as-is
+│   ├── favicon.svg
 │   └── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
 ├── src/
-│   ├── components/          # Shared presentational components
-│   │   ├── ui/              # Container, Button, PageTitle and shared styles
-│   │   ├── ErrorBoundary.jsx
-│   │   ├── Footer.jsx
-│   │   ├── GuitarCard.jsx
-│   │   └── Header.jsx
-│   ├── data/                # Local product data
-│   │   └── guitarras.js
-│   ├── hooks/               # Reusable hooks
-│   │   └── useReveal.js
-│   ├── layout/              # Route layout (header + main + footer)
-│   │   └── Layout.jsx
-│   ├── pages/               # Route-level components
-│   │   ├── Acerca.jsx
-│   │   ├── Catalogo.jsx
-│   │   ├── Contactanos.jsx
-│   │   ├── Error404.jsx
-│   │   ├── Home.jsx
-│   │   └── Producto.jsx
-│   ├── utils/               # Shared helpers
-│   │   └── formatPrice.js
-│   ├── App.jsx              # Route definitions
-│   ├── index.css            # Tailwind entry, tokens, fonts and motion
-│   └── main.jsx             # Application entry point
+│   ├── app/                 # App Router: one folder per route
+│   │   ├── layout.tsx       # <html lang="es">, skip link, header, <main>, footer
+│   │   ├── template.tsx     # Per-navigation entry animation
+│   │   ├── page.tsx         # /
+│   │   ├── catalogo/        # /catalogo
+│   │   ├── producto/[id]/   # /producto/:id (+ its own not-found.tsx)
+│   │   ├── contacto/        # /contacto
+│   │   ├── acerca/          # /acerca
+│   │   ├── not-found.tsx    # 404
+│   │   ├── error.tsx        # Route error boundary (retry)
+│   │   ├── global-error.tsx # Root layout error boundary
+│   │   └── globals.css      # Tailwind entry, tokens, fonts and motion
+│   ├── components/          # Shared components
+│   │   └── ui/              # Container, Button, PageTitle and shared styles
+│   ├── data/                # Local product data (only read by src/lib)
+│   ├── hooks/               # Client hooks (useReveal)
+│   ├── lib/                 # Data access layer (getGuitarras…)
+│   ├── types/               # Domain types (Guitarra, Categoria)
+│   └── utils/               # Pure helpers (formatPrice, staggerStyle)
 ├── docs/
 │   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
 │   └── DIRECCION_DE_ARTE.md # Art direction and design system
-├── eslint.config.js
-└── vite.config.js
+├── eslint.config.mjs
+├── next.config.ts
+├── postcss.config.mjs
+└── tsconfig.json
 ```
 
 ## Routes
 
-| Path             | Page              |
-| ---------------- | ----------------- |
-| `/`              | Home              |
-| `/catalogo`      | Product catalog   |
-| `/producto/:id`  | Product detail    |
-| `/acerca`        | About             |
-| `/contacto`      | Contact           |
-| `*`              | 404 Not found     |
+| Path             | Rendering                          | Notes                                    |
+| ---------------- | ---------------------------------- | ---------------------------------------- |
+| `/`              | Static                             |                                          |
+| `/catalogo`      | Static                             |                                          |
+| `/producto/[id]` | SSG (`generateStaticParams`)       | Unknown or invalid id → real HTTP 404    |
+| `/acerca`        | Static                             |                                          |
+| `/contacto`      | Static                             |                                          |
+| anything else    | `not-found.tsx`                    | HTTP 404                                 |
 
-Because routing is client-side, a production host must rewrite unknown paths to
-`index.html`; otherwise reloading `/producto/3` returns a server 404.
+Routes are resolved on the server, so deep links and reloads work without any
+hosting rewrite.
+
+## Server / client boundary
+
+Every component is a **Server Component** unless it needs state, effects or
+browser APIs. Only these files declare `"use client"`:
+
+| File                         | Why                                               |
+| ---------------------------- | ------------------------------------------------- |
+| `components/Header.tsx`      | Active link via `usePathname`                     |
+| `components/Reveal.tsx`      | Reveal on scroll (`IntersectionObserver`)         |
+| `hooks/useReveal.ts`         | Hook used by `Reveal`                             |
+| `app/error.tsx`              | Error boundaries must be Client Components        |
+| `app/global-error.tsx`       | Same, for the root layout                         |
+
+The brand ticker is pure CSS and stays on the server. Pages read data through
+`src/lib/guitarras.ts`; no component imports `src/data` directly.
 
 ## Conventions
 
-- **Language:** domain names in Spanish (`guitarra`, `precio`), infrastructure
-  and tooling in English (`getGuitarras`, `formatPrice`).
+- **Language:** domain in Spanish (`Guitarra`, `Categoria`, `precio`, route
+  segments such as `catalogo` or `producto`), infrastructure and tooling in
+  English (`getGuitarras`, `formatPrice`, `staggerStyle`, `Container`). UI copy
+  is always Spanish.
 - **Components:** one component per file, default export, `PascalCase` filename.
+- **Imports:** `@/*` maps to `src/*`.
+- **Types:** `strict: true`; no explicit `any`, no `@ts-ignore` (both enforced by
+  ESLint).
 - **Styling:** Tailwind utilities only; design tokens live in `@theme` inside
-  `src/index.css` (`paper`, `ink`, `accent`, fluid type scale). No CSS modules
-  or inline styles beyond CSS custom properties for stagger indexes.
+  `src/app/globals.css` (`paper`, `ink`, `accent`, fluid type scale).
 - **Prices:** always through `formatPrice` (`es-ES`, EUR) — never
   `toLocaleString()` in components.
-- **Data access:** components should not import `src/data` directly once a data
-  layer exists; see the roadmap in the audit.
+- **Data access:** async functions in `src/lib/` (`getGuitarras`,
+  `getGuitarraById`, `getCategorias`). In Phase 8 they switch to PostgreSQL
+  without touching the pages.
+
+## Hosting
+
+Vercel is the current choice and gives preview deployments per pull request.
+It is provisional, so the app avoids platform-only APIs: `pnpm build` +
+`pnpm start` runs it on any Node server.
 
 ## Design system
 
@@ -119,20 +148,19 @@ The visual direction is documented in
   `clamp()`, maximum 3 weights.
 - **Layout:** 12-column editorial grid; the catalog alternates 7/5 and 5/7
   cards instead of a uniform three-up grid.
-- **Motion:** CSS plus `useReveal` (`IntersectionObserver`); only `transform`
-  and `opacity`. `prefers-reduced-motion: reduce` disables every non-essential
-  animation and leaves all content visible.
+- **Motion:** CSS plus `Reveal` (`IntersectionObserver`); only `transform` and
+  `opacity`. `prefers-reduced-motion: reduce` disables every non-essential
+  animation and leaves all content visible, and so does disabled JavaScript.
 
 ## Known technical debt
 
-The current state, findings and phased roadmap live in
-[`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Notable items:
+See [`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Next up:
 
-- No automated tests and no CI yet.
-- Product images are remote and unoptimized (Phase 4).
-- SEO metadata is still the Vite template default (Phase 5).
-- Components still import `src/data` directly; the service layer arrives in
-  Phase 7.
+- Product images are remote `<img>` tags; `next/image` and local assets arrive
+  in Phase 4, `next/font/local` too.
+- Metadata is a basic title and description; the full Metadata API, sitemap
+  and Open Graph arrive in Phase 5.
+- No automated tests and no CI yet (Phase 6).
 
 ## License
 
