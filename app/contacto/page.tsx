@@ -1,6 +1,14 @@
 import Container from "@/components/ui/Container";
 import PageTitle from "@/components/ui/PageTitle";
 import Reveal from "@/components/Reveal";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Contacto",
+  description:
+    "Encargos a medida, restauraciones, tasaciones o una puesta a punto. Escríbenos o visítanos en Calle Mayor 12, Madrid: respondemos en 24–48 horas laborables.",
+  path: "/contacto",
+});
 
 const horario = [
   { dias: "Lunes — Viernes", horas: "10:00 — 19:30" },

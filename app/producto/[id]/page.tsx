@@ -6,6 +6,8 @@ import { formatPrice } from "@/utils/formatPrice";
 import Container from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/buttonStyles";
 import ProductImage, { imageSizes } from "@/components/ProductImage";
+import { pageMetadata } from "@/lib/seo";
+import { productJsonLd, serializeJsonLd } from "@/lib/structured-data";
 
 const enlaceVolver =
   "inline-flex items-center gap-2 rounded-sm text-sm font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-accent";
@@ -15,29 +17,37 @@ function parseId(raw: string): number | null {
   return /^[1-9]\d*$/.test(raw) ? Number(raw) : null;
 }
 
+async function getGuitarra(rawId: string) {
+  const id = parseId(rawId);
+  return id === null ? null : getGuitarraById(id);
+}
+
 export async function generateStaticParams() {
   const guitarras = await getGuitarras();
   return guitarras.map((guitarra) => ({ id: String(guitarra.id) }));
 }
 
-// Título básico por producto; la Metadata API completa llega en la Fase 5.
 export async function generateMetadata({
   params,
 }: PageProps<"/producto/[id]">): Promise<Metadata> {
   const { id } = await params;
-  const numericId = parseId(id);
-  const guitarra = numericId === null ? null : await getGuitarraById(numericId);
-  return guitarra
-    ? { title: `${guitarra.nombre} — Voltio & Madera` }
-    : {};
+  const guitarra = await getGuitarra(id);
+
+  // Sin producto, la página llama a notFound(): 404 con `noindex` automático.
+  if (!guitarra) return {};
+
+  return pageMetadata({
+    title: guitarra.nombre,
+    description: `${guitarra.descripcion} ${guitarra.marca}, ${formatPrice(guitarra.precio)}. Ajustada a mano en nuestro taller de Madrid.`,
+    path: `/producto/${guitarra.id}`,
+  });
 }
 
 export default async function Producto({
   params,
 }: PageProps<"/producto/[id]">) {
   const { id } = await params;
-  const numericId = parseId(id);
-  const guitarra = numericId === null ? null : await getGuitarraById(numericId);
+  const guitarra = await getGuitarra(id);
 
   if (!guitarra) notFound();
 
@@ -47,6 +57,10 @@ export default async function Producto({
 
   return (
     <article className="pb-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(productJsonLd(guitarra)) }}
+      />
       <Container className="pt-8">
         <nav aria-label="Migas de pan" className="mb-10">
           <ol className="flex flex-wrap items-center gap-2 text-sm text-ink-soft">

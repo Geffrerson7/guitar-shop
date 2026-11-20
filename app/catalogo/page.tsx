@@ -3,6 +3,14 @@ import { staggerStyle } from "@/utils/stagger";
 import GuitarCard from "@/components/GuitarCard";
 import Container from "@/components/ui/Container";
 import PageTitle from "@/components/ui/PageTitle";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Catálogo",
+  description:
+    "Doce instrumentos de boutique elegidos por su carácter, su construcción y su sonido: eléctricas, acústicas, bajos y amplificación, ajustados a mano en Madrid.",
+  path: "/catalogo",
+});
 
 const columnas = [
   "lg:col-span-7",
