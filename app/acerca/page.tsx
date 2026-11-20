@@ -83,9 +83,9 @@ export default async function Acerca() {
                 instrumento y decidir qué merece la pena conservar.
               </p>
               <p>
-                No trabajamos con catálogos de temporada. Cuando una pieza
-                llega al taller, la estudiamos, la documentamos y decidimos si
-                tiene algo que contar. Si no lo tiene, no entra.
+                No trabajamos con catálogos de temporada. Cuando una pieza llega
+                al taller, la estudiamos, la documentamos y decidimos si tiene
+                algo que contar. Si no lo tiene, no entra.
               </p>
               <p>
                 Lo que ves en el catálogo es lo que hay. Si buscas algo que no

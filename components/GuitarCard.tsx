@@ -38,7 +38,9 @@ export default function GuitarCard({
           <ProductImage
             src={guitarra.imagen}
             alt={`${guitarra.nombre} — ${guitarra.marca}`}
-            sizes={sizes ?? (wide ? imageSizes.cardWide : imageSizes.cardNarrow)}
+            sizes={
+              sizes ?? (wide ? imageSizes.cardWide : imageSizes.cardNarrow)
+            }
             lcp={lcp}
             className="transition-transform duration-700 ease-out group-hover:scale-[1.045]"
           />

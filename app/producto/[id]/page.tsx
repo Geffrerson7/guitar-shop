@@ -59,7 +59,9 @@ export default async function Producto({
     <article className="pb-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(productJsonLd(guitarra)) }}
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(productJsonLd(guitarra)),
+        }}
       />
       <Container className="pt-8">
         <nav aria-label="Migas de pan" className="mb-10">
@@ -157,7 +159,10 @@ export default async function Producto({
                 >
                   Añadir al carrito — Próximamente
                 </button>
-                <a href={consulta} className={buttonClasses("outline", "w-full")}>
+                <a
+                  href={consulta}
+                  className={buttonClasses("outline", "w-full")}
+                >
                   Consultar disponibilidad
                 </a>
                 <p className="text-sm leading-relaxed text-ink-soft">

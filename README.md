@@ -13,14 +13,14 @@ English.
 
 ## Stack
 
-| Layer      | Technology                                                  |
-| ---------- | ----------------------------------------------------------- |
-| Framework  | Next.js 16 (App Router, Turbopack)                          |
-| Language   | TypeScript 6 (`strict`, no explicit `any`)                  |
-| UI         | React 19 — Server Components by default                     |
-| Styling    | Tailwind CSS 4 (via `@tailwindcss/postcss`)                 |
-| Linting    | ESLint 10 flat config with `eslint-config-next` (+ TS rules) |
-| Hosting    | Vercel for now — no platform-only APIs (see below)          |
+| Layer     | Technology                                                   |
+| --------- | ------------------------------------------------------------ |
+| Framework | Next.js 16 (App Router, Turbopack)                           |
+| Language  | TypeScript 6 (`strict`, no explicit `any`)                   |
+| UI        | React 19 — Server Components by default                      |
+| Styling   | Tailwind CSS 4 (via `@tailwindcss/postcss`)                  |
+| Linting   | ESLint 10 flat config with `eslint-config-next` (+ TS rules) |
+| Hosting   | Vercel for now — no platform-only APIs (see below)           |
 
 ## Requirements
 
@@ -42,19 +42,19 @@ The dev server runs on `http://localhost:3000`.
 Copy `.env.example` to `.env.local` when you need them. None is required for
 local development.
 
-| Variable   | Purpose                                                                  |
-| ---------- | ------------------------------------------------------------------------ |
+| Variable   | Purpose                                                                                                                                                                                                                                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SITE_URL` | Public URL of the site, without trailing slash. Used for canonical URLs, Open Graph, `sitemap.xml`, `robots.txt` and JSON-LD. Falls back to `VERCEL_PROJECT_PRODUCTION_URL` and then to `http://localhost:3000`. Set it **at build time and at runtime**: static pages read it during the build, dynamic responses (such as a product 404) at request time. |
 
 ## Scripts
 
-| Command          | Description                                          |
-| ---------------- | ---------------------------------------------------- |
-| `pnpm dev`       | Start the Next.js dev server                         |
-| `pnpm build`     | Production build into `.next/`                       |
-| `pnpm start`     | Serve the production build (any Node server)         |
-| `pnpm lint`      | Run ESLint over the whole project                    |
-| `pnpm typecheck` | Generate route types and run `tsc --noEmit`          |
+| Command          | Description                                  |
+| ---------------- | -------------------------------------------- |
+| `pnpm dev`       | Start the Next.js dev server                 |
+| `pnpm build`     | Production build into `.next/`               |
+| `pnpm start`     | Serve the production build (any Node server) |
+| `pnpm lint`      | Run ESLint over the whole project            |
+| `pnpm typecheck` | Generate route types and run `tsc --noEmit`  |
 
 ## Project structure
 
@@ -98,14 +98,14 @@ local development.
 
 ## Routes
 
-| Path             | Rendering                          | Notes                                    |
-| ---------------- | ---------------------------------- | ---------------------------------------- |
-| `/`              | Static                             |                                          |
-| `/catalogo`      | Static                             |                                          |
-| `/producto/[id]` | SSG (`generateStaticParams`)       | Unknown or invalid id → real HTTP 404    |
-| `/acerca`        | Static                             |                                          |
-| `/contacto`      | Static                             |                                          |
-| anything else    | `not-found.tsx`                    | HTTP 404                                 |
+| Path             | Rendering                    | Notes                                 |
+| ---------------- | ---------------------------- | ------------------------------------- |
+| `/`              | Static                       |                                       |
+| `/catalogo`      | Static                       |                                       |
+| `/producto/[id]` | SSG (`generateStaticParams`) | Unknown or invalid id → real HTTP 404 |
+| `/acerca`        | Static                       |                                       |
+| `/contacto`      | Static                       |                                       |
+| anything else    | `not-found.tsx`              | HTTP 404                              |
 
 Routes are resolved on the server, so deep links and reloads work without any
 hosting rewrite.
@@ -115,13 +115,13 @@ hosting rewrite.
 Every component is a **Server Component** unless it needs state, effects or
 browser APIs. Only these files declare `"use client"`:
 
-| File                         | Why                                               |
-| ---------------------------- | ------------------------------------------------- |
-| `components/Header.tsx`      | Active link via `usePathname`                     |
-| `components/Reveal.tsx`      | Reveal on scroll (`IntersectionObserver`)         |
-| `hooks/useReveal.ts`         | Hook used by `Reveal`                             |
-| `app/error.tsx`              | Error boundaries must be Client Components        |
-| `app/global-error.tsx`       | Same, for the root layout                         |
+| File                    | Why                                        |
+| ----------------------- | ------------------------------------------ |
+| `components/Header.tsx` | Active link via `usePathname`              |
+| `components/Reveal.tsx` | Reveal on scroll (`IntersectionObserver`)  |
+| `hooks/useReveal.ts`    | Hook used by `Reveal`                      |
+| `app/error.tsx`         | Error boundaries must be Client Components |
+| `app/global-error.tsx`  | Same, for the root layout                  |
 
 The brand ticker is pure CSS and stays on the server. Pages read data through
 `lib/guitarras.ts`; no component imports `data/` directly.

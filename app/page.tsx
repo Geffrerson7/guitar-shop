@@ -92,7 +92,10 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section aria-label="El taller en cifras" className="border-y border-line/70">
+      <section
+        aria-label="El taller en cifras"
+        className="border-y border-line/70"
+      >
         <Container className="grid grid-cols-1 divide-y divide-line/70 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           {cifras.map((cifra) => (
             <div key={cifra.etiqueta} className="px-0 py-8 sm:px-8 sm:py-10">
@@ -108,7 +111,10 @@ export default async function Home() {
       </section>
 
       {/* Ticker: CSS puro, no necesita JavaScript de cliente. */}
-      <section aria-label="Marcas representadas" className="border-b border-line/70 bg-paper-deep/40 py-6">
+      <section
+        aria-label="Marcas representadas"
+        className="border-b border-line/70 bg-paper-deep/40 py-6"
+      >
         <div className="marquee-mask overflow-hidden">
           <div className="marquee-track flex w-max items-center">
             <div className="flex items-center gap-14 pr-14">
