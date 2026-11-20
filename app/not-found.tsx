@@ -1,6 +1,12 @@
 import Link from "next/link";
 import Container from "@/components/ui/Container";
+import type { Metadata } from "next";
 import { buttonClasses } from "@/components/ui/buttonStyles";
+
+// Next.js añade `<meta name="robots" content="noindex">` a las respuestas 404.
+export const metadata: Metadata = {
+  title: "Página no encontrada",
+};
 
 export default function NotFound() {
   return (

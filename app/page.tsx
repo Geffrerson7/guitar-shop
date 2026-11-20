@@ -8,6 +8,13 @@ import GuitarCard from "@/components/GuitarCard";
 import ProductImage, { imageSizes } from "@/components/ProductImage";
 import Reveal from "@/components/Reveal";
 import type { Guitarra } from "@/types/guitarra";
+import { pageMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
+
+export const metadata = pageMetadata({
+  description: siteConfig.description,
+  path: "/",
+});
 
 const cifras = [
   { valor: "1994", etiqueta: "Año de apertura del taller" },

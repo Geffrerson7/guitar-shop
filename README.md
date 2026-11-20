@@ -37,6 +37,15 @@ pnpm dev
 
 The dev server runs on `http://localhost:3000`.
 
+### Environment variables
+
+Copy `.env.example` to `.env.local` when you need them. None is required for
+local development.
+
+| Variable   | Purpose                                                                  |
+| ---------- | ------------------------------------------------------------------------ |
+| `SITE_URL` | Public URL of the site, without trailing slash. Used for canonical URLs, Open Graph, `sitemap.xml`, `robots.txt` and JSON-LD. Falls back to `VERCEL_PROJECT_PRODUCTION_URL` and then to `http://localhost:3000`. Set it **at build time and at runtime**: static pages read it during the build, dynamic responses (such as a product 404) at request time. |
+
 ## Scripts
 
 | Command          | Description                                          |
@@ -62,19 +71,22 @@ The dev server runs on `http://localhost:3000`.
 │   ├── not-found.tsx        # 404
 │   ├── error.tsx            # Route error boundary (retry)
 │   ├── global-error.tsx     # Root layout error boundary
+│   ├── robots.ts            # /robots.txt
+│   ├── sitemap.ts           # /sitemap.xml (built from the data layer)
+│   ├── icon.svg             # Favicon
+│   ├── apple-icon.png       # Home screen icon (180×180)
 │   └── globals.css          # Tailwind entry, tokens and motion
 ├── assets/                  # Files imported by code (hashed and optimized at build)
 │   ├── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
-│   └── guitarras/           # Product images (WebP sources, 512×512)
+│   ├── guitarras/           # Product images (WebP sources, 512×512)
+│   └── og/                  # Share image for Open Graph and Twitter (1200×630)
 ├── components/              # Shared components
 │   └── ui/                  # Container, Button, PageTitle and shared styles
 ├── data/                    # Local product data (only read by lib/)
 ├── hooks/                   # Client hooks (useReveal)
-├── lib/                     # Data access layer (getGuitarras…)
+├── lib/                     # Data access (getGuitarras…), fonts, site URL, SEO helpers
 ├── types/                   # Domain types (Guitarra, Categoria)
 ├── utils/                   # Pure helpers (formatPrice, staggerStyle)
-├── public/                  # Static files served as-is
-│   └── favicon.svg
 ├── docs/
 │   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
 │   └── DIRECCION_DE_ARTE.md # Art direction and design system
@@ -154,6 +166,25 @@ remote URL (Cloudinary, Phase 13), so pages do not change when the source does.
   `loading="eager"` + `fetchPriority="high"`.
 - No remote origins are allowed yet (`remotePatterns: []`).
 
+## SEO and metadata
+
+- **Metadata API:** the root layout sets `metadataBase`, a default title and
+  the `%s — Voltio & Madera` template, `theme-color`, and Open Graph / Twitter
+  defaults. Each page calls `pageMetadata()` from `lib/seo.ts` for its title,
+  description and canonical URL; the product detail uses `generateMetadata`.
+- **Share image:** `assets/og/voltio-y-madera.jpg` (1200×630) is passed
+  explicitly by `pageMetadata()`. The `opengraph-image` file convention is not
+  used because a page that declares its own `openGraph` replaces the whole
+  object and drops the file-based image.
+- **Crawling:** `app/robots.ts` and `app/sitemap.ts`. The sitemap reads from
+  `getGuitarras()`, so it follows the catalog when it moves to the database.
+  `/admin`, `/carrito`, `/checkout` and `/pedido` are disallowed ahead of the
+  phases that create them. 404 responses get `noindex` from Next.js.
+- **Structured data:** schema.org `Product` JSON-LD on each product page
+  (`lib/structured-data.ts`), with `availability: InStoreOnly` until there is
+  online checkout. `<` is escaped so content cannot close the script tag.
+- **Icons:** `app/icon.svg` and `app/apple-icon.png` (file conventions).
+
 ## Design system
 
 The visual direction is documented in
@@ -176,8 +207,7 @@ See [`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Next up:
 
 - Product photos are 512×512 sources: enough for cards, too small for
   full-bleed images on desktop (they bleed only on mobile and tablet).
-- Metadata is a basic title and description; the full Metadata API, sitemap
-  and Open Graph arrive in Phase 5.
+- Product pages share the site-wide preview image instead of one per product.
 - No automated tests and no CI yet (Phase 6).
 
 ## License

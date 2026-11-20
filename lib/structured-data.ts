@@ -1,0 +1,45 @@
+import type { Guitarra, ImagenProducto } from "@/types/guitarra";
+import { absoluteUrl, siteConfig } from "./site";
+
+/** URL absoluta de una imagen de producto, sea import estático o remota. */
+export function imagenUrl(imagen: ImagenProducto): string {
+  return absoluteUrl(typeof imagen === "string" ? imagen : imagen.src);
+}
+
+/**
+ * Datos estructurados schema.org `Product` para el detalle.
+ * La disponibilidad es `InStoreOnly`: todavía no hay venta online (llega con
+ * el carrito y el checkout de las fases 10 y 11).
+ */
+export function productJsonLd(guitarra: Guitarra) {
+  const url = absoluteUrl(`/producto/${guitarra.id}`);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${url}#producto`,
+    name: guitarra.nombre,
+    description: guitarra.descripcion,
+    image: [imagenUrl(guitarra.imagen)],
+    sku: String(guitarra.id),
+    category: guitarra.categoria,
+    brand: { "@type": "Brand", name: guitarra.marca },
+    url,
+    offers: {
+      "@type": "Offer",
+      url,
+      price: guitarra.precio.toFixed(2),
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStoreOnly",
+      seller: { "@type": "Organization", name: siteConfig.name },
+    },
+  };
+}
+
+/**
+ * Serializa JSON-LD para un `<script type="application/ld+json">`, escapando
+ * `<` para que un texto con `</script>` no pueda cerrar la etiqueta.
+ */
+export function serializeJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\u003c");
+}

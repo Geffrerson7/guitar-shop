@@ -5,6 +5,14 @@ import PageTitle from "@/components/ui/PageTitle";
 import Reveal from "@/components/Reveal";
 import { buttonClasses } from "@/components/ui/buttonStyles";
 import ProductImage, { imageSizes } from "@/components/ProductImage";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "El taller",
+  description:
+    "Una luthería de barrio en el centro de Madrid desde 1994: compramos, restauramos y ajustamos instrumentos para músicos que quieren entender qué tienen entre las manos.",
+  path: "/acerca",
+});
 
 const cifras = [
   { valor: "1994", etiqueta: "Año en que abrimos el taller" },

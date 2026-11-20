@@ -3,20 +3,35 @@ import type { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { bodoniModa, inter } from "@/lib/fonts";
+import { siteConfig, siteUrl } from "@/lib/site";
+import { shareImage } from "@/lib/seo";
 import "./globals.css";
 
-// Metadatos mínimos. La Metadata API completa (títulos por ruta, Open Graph,
-// sitemap…) llega en la Fase 5.
+// Metadatos comunes. Cada página aporta su título, descripción y canonical con
+// `pageMetadata` (lib/seo.ts). Los iconos salen de los archivos de convención
+// de app/ (icon.svg, apple-icon.png). Estos valores cubren las rutas sin
+// metadatos propios, como la 404.
 export const metadata: Metadata = {
-  title: "Voltio & Madera",
-  description:
-    "Luthiería de autor en Madrid desde 1994: instrumentos de boutique elegidos uno a uno y ajustados a mano.",
-  icons: { icon: "/favicon.svg" },
+  metadataBase: siteUrl,
+  title: {
+    default: `${siteConfig.name} — ${siteConfig.tagline}`,
+    template: `%s — ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  openGraph: {
+    type: "website",
+    locale: siteConfig.locale,
+    siteName: siteConfig.name,
+    images: [shareImage],
+  },
+  twitter: { card: "summary_large_image", images: [shareImage] },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: siteConfig.themeColor,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
