@@ -63,17 +63,16 @@ The dev server runs on `http://localhost:3000`.
 │   ├── error.tsx            # Route error boundary (retry)
 │   ├── global-error.tsx     # Root layout error boundary
 │   └── globals.css          # Tailwind entry, tokens, fonts and motion
+├── components/              # Shared components
+│   └── ui/                  # Container, Button, PageTitle and shared styles
+├── data/                    # Local product data (only read by lib/)
+├── hooks/                   # Client hooks (useReveal)
+├── lib/                     # Data access layer (getGuitarras…)
+├── types/                   # Domain types (Guitarra, Categoria)
+├── utils/                   # Pure helpers (formatPrice, staggerStyle)
 ├── public/                  # Static assets served as-is
 │   ├── favicon.svg
 │   └── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
-├── src/                     # Everything that is not routing
-│   ├── components/          # Shared components
-│   │   └── ui/              # Container, Button, PageTitle and shared styles
-│   ├── data/                # Local product data (only read by src/lib)
-│   ├── hooks/               # Client hooks (useReveal)
-│   ├── lib/                 # Data access layer (getGuitarras…)
-│   ├── types/               # Domain types (Guitarra, Categoria)
-│   └── utils/               # Pure helpers (formatPrice, staggerStyle)
 ├── docs/
 │   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
 │   └── DIRECCION_DE_ARTE.md # Art direction and design system
@@ -104,14 +103,14 @@ browser APIs. Only these files declare `"use client"`:
 
 | File                         | Why                                               |
 | ---------------------------- | ------------------------------------------------- |
-| `src/components/Header.tsx`  | Active link via `usePathname`                     |
-| `src/components/Reveal.tsx`  | Reveal on scroll (`IntersectionObserver`)         |
-| `src/hooks/useReveal.ts`     | Hook used by `Reveal`                             |
+| `components/Header.tsx`      | Active link via `usePathname`                     |
+| `components/Reveal.tsx`      | Reveal on scroll (`IntersectionObserver`)         |
+| `hooks/useReveal.ts`         | Hook used by `Reveal`                             |
 | `app/error.tsx`              | Error boundaries must be Client Components        |
 | `app/global-error.tsx`       | Same, for the root layout                         |
 
 The brand ticker is pure CSS and stays on the server. Pages read data through
-`src/lib/guitarras.ts`; no component imports `src/data` directly.
+`lib/guitarras.ts`; no component imports `data/` directly.
 
 ## Conventions
 
@@ -120,16 +119,17 @@ The brand ticker is pure CSS and stays on the server. Pages read data through
   English (`getGuitarras`, `formatPrice`, `staggerStyle`, `Container`). UI copy
   is always Spanish.
 - **Components:** one component per file, default export, `PascalCase` filename.
-- **Folders:** `app/` at the project root holds routing only (pages, layouts,
-  error and not-found files); everything else lives in `src/`.
-- **Imports:** `@/*` maps to `src/*`.
+- **Folders:** no `src/` directory. `app/` holds routing only (pages, layouts,
+  error and not-found files); shared code lives in sibling top-level folders
+  (`components/`, `lib/`, `data/`, `types/`, `hooks/`, `utils/`).
+- **Imports:** `@/*` maps to the project root (`@/components/…`, `@/lib/…`).
 - **Types:** `strict: true`; no explicit `any`, no `@ts-ignore` (both enforced by
   ESLint).
 - **Styling:** Tailwind utilities only; design tokens live in `@theme` inside
   `app/globals.css` (`paper`, `ink`, `accent`, fluid type scale).
 - **Prices:** always through `formatPrice` (`es-ES`, EUR) — never
   `toLocaleString()` in components.
-- **Data access:** async functions in `src/lib/` (`getGuitarras`,
+- **Data access:** async functions in `lib/` (`getGuitarras`,
   `getGuitarraById`, `getCategorias`). In Phase 8 they switch to PostgreSQL
   without touching the pages.
 
