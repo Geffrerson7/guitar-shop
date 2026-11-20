@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import LinkSpinner from "@/components/LinkSpinner";
 import { notFound } from "next/navigation";
 import { getGuitarraById, getGuitarras } from "@/lib/guitarras";
 import { formatPrice } from "@/utils/formatPrice";
@@ -108,7 +109,7 @@ export default async function Producto({
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
               <Link href="/catalogo" className={enlaceVolver}>
-                ← Volver al catálogo
+                <LinkSpinner>← Volver al catálogo</LinkSpinner>
               </Link>
 
               <p className="mt-10 text-sm font-medium uppercase tracking-[0.3em] text-accent">

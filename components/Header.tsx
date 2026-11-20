@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LinkSpinner from "./LinkSpinner";
 import Container from "./ui/Container";
 
 type NavItem = {
@@ -64,7 +65,11 @@ export default function Header() {
                     aria-current={current ? "page" : undefined}
                     className={navClasses(active)}
                   >
-                    {item.label}
+                    {item.href === "/catalogo" ? (
+                      <LinkSpinner>{item.label}</LinkSpinner>
+                    ) : (
+                      item.label
+                    )}
                   </Link>
                 </li>
               );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LinkSpinner from "@/components/LinkSpinner";
 import { getGuitarras } from "@/lib/guitarras";
 import Container from "@/components/ui/Container";
 import PageTitle from "@/components/ui/PageTitle";
@@ -139,7 +140,7 @@ export default async function Acerca() {
 
         <div className="mt-20 flex flex-wrap items-center gap-4 border-t border-line/80 pt-10">
           <Link href="/catalogo" className={buttonClasses("solid")}>
-            Ver el catálogo
+            <LinkSpinner>Ver el catálogo</LinkSpinner>
           </Link>
           <Link href="/contacto" className={buttonClasses("outline")}>
             Escríbenos

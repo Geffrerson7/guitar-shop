@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LinkSpinner from "@/components/LinkSpinner";
 import { getGuitarras } from "@/lib/guitarras";
 import { formatPrice } from "@/utils/formatPrice";
 import { staggerStyle } from "@/utils/stagger";
@@ -50,7 +51,7 @@ export default async function Home() {
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link href="/catalogo" className={buttonClasses("solid")}>
-                Explorar el catálogo
+                <LinkSpinner>Explorar el catálogo</LinkSpinner>
               </Link>
               <Link href="/acerca" className={buttonClasses("outline")}>
                 Conoce el taller
@@ -159,7 +160,7 @@ export default async function Home() {
               href="/catalogo"
               className="nav-link py-1 text-sm font-medium uppercase tracking-[0.16em] text-ink"
             >
-              Ver las {guitarras.length} piezas
+              <LinkSpinner>Ver las {guitarras.length} piezas</LinkSpinner>
             </Link>
           </Reveal>
 
