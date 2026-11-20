@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" data-scroll-behavior="smooth">
       <body>
         {/* Sin JavaScript el reveal on scroll no se activa: el contenido
             renderizado en servidor debe verse igualmente. */}
