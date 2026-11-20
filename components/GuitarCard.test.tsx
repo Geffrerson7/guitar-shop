@@ -16,18 +16,35 @@ const guitarra: Guitarra = {
 };
 
 describe("GuitarCard", () => {
-  it("enlaza al detalle con nombre, marca, precio e índice", () => {
+  it("el enlace al detalle se llama como el producto", () => {
+    render(<GuitarCard guitarra={guitarra} />);
+
+    expect(
+      screen.getByRole("link", { name: "Masterbuilt '57 S-Type" }),
+    ).toHaveAttribute("href", "/producto/7");
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Masterbuilt '57 S-Type" }),
+    ).toBeInTheDocument();
+  });
+
+  it("muestra marca, precio, índice y badge", () => {
     render(<GuitarCard guitarra={guitarra} index={6} />);
 
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/producto/7");
-    expect(
-      screen.getByRole("heading", { name: "Masterbuilt '57 S-Type" }),
-    ).toBeInTheDocument();
-    expect(link).toHaveTextContent("Fender Custom Shop");
-    expect(link).toHaveTextContent(/6100\s€/);
-    expect(link).toHaveTextContent("07");
-    expect(link).toHaveTextContent("Vintage");
+    const tarjeta = screen.getByRole("article");
+    expect(tarjeta).toHaveTextContent("Fender Custom Shop");
+    expect(tarjeta).toHaveTextContent(/6100\s€/);
+    expect(tarjeta).toHaveTextContent("07");
+    expect(tarjeta).toHaveTextContent("Vintage");
+  });
+
+  it("el índice y «Ver pieza» son decorativos para tecnologías de apoyo", () => {
+    render(<GuitarCard guitarra={guitarra} index={6} />);
+
+    expect(screen.getByText("07")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("Ver pieza →")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 
   it("la imagen tiene un texto alternativo descriptivo y carga diferida", () => {
@@ -49,6 +66,6 @@ describe("GuitarCard", () => {
 
   it("sin badge no muestra la etiqueta", () => {
     render(<GuitarCard guitarra={{ ...guitarra, badge: null }} />);
-    expect(screen.getByRole("link")).not.toHaveTextContent("Vintage");
+    expect(screen.getByRole("article")).not.toHaveTextContent("Vintage");
   });
 });

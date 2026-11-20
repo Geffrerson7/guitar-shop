@@ -23,7 +23,9 @@ describe("Header", () => {
     expect(
       screen.getByRole("navigation", { name: "Navegación principal" }),
     ).toBeInTheDocument();
-    expect(enlace("Voltio & Madera — Inicio")).toHaveAttribute("href", "/");
+    expect(
+      screen.getByRole("link", { name: /^Voltio & Madera.*Inicio$/ }),
+    ).toHaveAttribute("href", "/");
   });
 
   it("marca con aria-current solo la ruta exacta", () => {

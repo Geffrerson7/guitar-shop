@@ -37,17 +37,16 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-line/70 bg-paper/85 backdrop-blur-md">
       <Container className="flex flex-wrap items-center justify-between gap-x-8 gap-y-2 py-4">
-        <Link
-          href="/"
-          className="group flex items-baseline gap-3 rounded-sm"
-          aria-label="Voltio & Madera — Inicio"
-        >
+        {/* Nombre accesible desde el contenido visible (WCAG 2.5.3), con el
+            destino solo para lectores de pantalla. */}
+        <Link href="/" className="group flex items-baseline gap-3 rounded-sm">
           <span className="font-display text-2xl leading-none text-ink transition-colors group-hover:text-accent sm:text-3xl">
             Voltio &amp; Madera
-          </span>
+          </span>{" "}
           <span className="hidden text-sm uppercase tracking-[0.22em] text-ink-soft sm:inline">
             Est. 1994
           </span>
+          <span className="sr-only"> — Inicio</span>
         </Link>
 
         <nav aria-label="Navegación principal">

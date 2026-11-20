@@ -16,7 +16,7 @@ const servicios = [
 ];
 
 const enlaceFooter =
-  "inline-block rounded-sm text-paper/80 transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent";
+  "inline-block rounded-sm text-paper/80 transition-colors hover:text-accent-light focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-light";
 
 export default function Footer() {
   return (
@@ -24,7 +24,7 @@ export default function Footer() {
       <Container className="py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">
+            <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent-light">
               Luthiería de autor — Madrid
             </p>
             <p className="mt-6 max-w-sm font-display text-3xl leading-tight text-balance sm:text-4xl">
@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
 
           <nav className="lg:col-span-2" aria-label="Colección">
-            <h2 className="mb-5 text-sm font-medium uppercase tracking-[0.24em] text-accent">
+            <h2 className="mb-5 text-sm font-medium uppercase tracking-[0.24em] text-accent-light">
               Colección
             </h2>
             <ul className="space-y-3 text-sm text-paper/70">
@@ -53,7 +53,7 @@ export default function Footer() {
           </nav>
 
           <div className="lg:col-span-2">
-            <h2 className="mb-5 text-sm font-medium uppercase tracking-[0.24em] text-accent">
+            <h2 className="mb-5 text-sm font-medium uppercase tracking-[0.24em] text-accent-light">
               Servicios
             </h2>
             <ul className="space-y-3 text-sm text-paper/70">
@@ -64,7 +64,7 @@ export default function Footer() {
           </div>
 
           <div className="lg:col-span-3">
-            <h2 className="mb-5 text-sm font-medium uppercase tracking-[0.24em] text-accent">
+            <h2 className="mb-5 text-sm font-medium uppercase tracking-[0.24em] text-accent-light">
               Visítanos
             </h2>
             <address className="space-y-3 text-sm not-italic text-paper/70">
@@ -89,6 +89,7 @@ export default function Footer() {
 
         <p
           aria-hidden="true"
+          data-decorativo=""
           className="mt-16 select-none overflow-hidden border-t border-paper/10 pt-8 font-display text-[clamp(2.5rem,10vw,9rem)] leading-[0.85] tracking-[-0.04em] whitespace-nowrap text-paper/10"
         >
           Voltio &amp; Madera
