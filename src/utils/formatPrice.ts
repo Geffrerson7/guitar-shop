@@ -8,6 +8,6 @@ const euroFormatter = new Intl.NumberFormat("es-ES", {
  * Formatea un precio en euros con un único criterio (es-ES).
  * Evita que catálogo y detalle muestren importes distintos.
  */
-export function formatPrice(value) {
+export function formatPrice(value: number): string {
   return euroFormatter.format(value);
 }

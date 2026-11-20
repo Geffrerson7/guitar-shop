@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
-import Container from "../components/ui/Container";
-import { buttonClasses } from "../components/ui/buttonStyles";
+import Link from "next/link";
+import Container from "@/components/ui/Container";
+import { buttonClasses } from "@/components/ui/buttonStyles";
 
-export default function Error404() {
+export default function NotFound() {
   return (
     <section className="flex min-h-[70svh] items-center py-20">
       <Container>
@@ -23,10 +23,10 @@ export default function Error404() {
           inicio o explora los instrumentos que sí están en el taller.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-4">
-          <Link to="/" className={buttonClasses("solid")}>
+          <Link href="/" className={buttonClasses("solid")}>
             Ir al inicio
           </Link>
-          <Link to="/catalogo" className={buttonClasses("outline")}>
+          <Link href="/catalogo" className={buttonClasses("outline")}>
             Ver el catálogo
           </Link>
         </div>

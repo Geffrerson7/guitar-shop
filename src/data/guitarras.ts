@@ -1,4 +1,6 @@
-export const guitarras = [
+import type { Guitarra } from "@/types/guitarra";
+
+export const guitarras: Guitarra[] = [
   {
     id: 1,
     nombre: 'Heritage Custom T-Style',

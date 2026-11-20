@@ -1,11 +1,9 @@
-import { guitarras } from "../data/guitarras";
-import { useReveal } from "../hooks/useReveal";
-import Container from "../components/ui/Container";
-import PageTitle from "../components/ui/PageTitle";
-import { buttonClasses } from "../components/ui/buttonStyles";
-import { Link } from "react-router-dom";
-
-const retrato = guitarras[6] ?? guitarras[0];
+import Link from "next/link";
+import { getGuitarras } from "@/lib/guitarras";
+import Container from "@/components/ui/Container";
+import PageTitle from "@/components/ui/PageTitle";
+import Reveal from "@/components/Reveal";
+import { buttonClasses } from "@/components/ui/buttonStyles";
 
 const cifras = [
   { valor: "1994", etiqueta: "Año en que abrimos el taller" },
@@ -34,9 +32,9 @@ const principios = [
   },
 ];
 
-export default function Acerca() {
-  const historiaRef = useReveal();
-  const principiosRef = useReveal();
+export default async function Acerca() {
+  const guitarras = await getGuitarras();
+  const retrato = guitarras[6] ?? guitarras[0];
 
   return (
     <div className="py-16 sm:py-20">
@@ -47,25 +45,23 @@ export default function Acerca() {
           intro="Somos una luthería de barrio en el centro de Madrid. Desde 1994 compramos, restauramos y ajustamos instrumentos para músicos que quieren entender qué tienen entre las manos."
         />
 
-        <figure className="mt-14">
-          <div className="aspect-[16/10] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
-            <img
-              src={retrato.imagen}
-              alt={`${retrato.nombre} — ${retrato.marca}`}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <figcaption className="mt-4 text-sm text-ink-soft">
-            {retrato.nombre}, una de las piezas que han pasado por el taller
-            este año.
-          </figcaption>
-        </figure>
+        {retrato && (
+          <figure className="mt-14">
+            <div className="aspect-[16/10] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
+              <img
+                src={retrato.imagen}
+                alt={`${retrato.nombre} — ${retrato.marca}`}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <figcaption className="mt-4 text-sm text-ink-soft">
+              {retrato.nombre}, una de las piezas que han pasado por el taller
+              este año.
+            </figcaption>
+          </figure>
+        )}
 
-        <div
-          ref={historiaRef}
-          data-reveal=""
-          className="mt-20 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16"
-        >
+        <Reveal className="mt-20 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <h2 className="font-display text-h2 text-balance text-ink">
               La obsesión por el detalle, contada sin prisa.
@@ -109,9 +105,9 @@ export default function Acerca() {
               </dl>
             </div>
           </div>
-        </div>
+        </Reveal>
 
-        <div ref={principiosRef} data-reveal="" className="mt-20">
+        <Reveal className="mt-20">
           <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">
             Cómo trabajamos
           </p>
@@ -130,13 +126,13 @@ export default function Acerca() {
               </article>
             ))}
           </div>
-        </div>
+        </Reveal>
 
         <div className="mt-20 flex flex-wrap items-center gap-4 border-t border-line/80 pt-10">
-          <Link to="/catalogo" className={buttonClasses("solid")}>
+          <Link href="/catalogo" className={buttonClasses("solid")}>
             Ver el catálogo
           </Link>
-          <Link to="/contacto" className={buttonClasses("outline")}>
+          <Link href="/contacto" className={buttonClasses("outline")}>
             Escríbenos
           </Link>
         </div>

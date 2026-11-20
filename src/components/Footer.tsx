@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import Container from "./ui/Container";
 
 const categorias = [
@@ -45,7 +45,7 @@ export default function Footer() {
                 <li key={categoria}>{categoria}</li>
               ))}
               <li>
-                <Link to="/catalogo" className={`${enlaceFooter} mt-2`}>
+                <Link href="/catalogo" className={`${enlaceFooter} mt-2`}>
                   Ver catálogo completo →
                 </Link>
               </li>

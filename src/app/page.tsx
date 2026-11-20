@@ -1,14 +1,12 @@
-import { Link } from "react-router-dom";
-import { guitarras } from "../data/guitarras";
-import { formatPrice } from "../utils/formatPrice";
-import { useReveal } from "../hooks/useReveal";
-import Container from "../components/ui/Container";
-import { buttonClasses } from "../components/ui/buttonStyles";
-import GuitarCard from "../components/GuitarCard";
-
-const hero = guitarras.find((guitarra) => guitarra.id === 2) ?? guitarras[0];
-const marcas = [...new Set(guitarras.map((guitarra) => guitarra.marca))];
-const destacadas = [guitarras[0], guitarras[5], guitarras[10]];
+import Link from "next/link";
+import { getGuitarras } from "@/lib/guitarras";
+import { formatPrice } from "@/utils/formatPrice";
+import { staggerStyle } from "@/utils/stagger";
+import Container from "@/components/ui/Container";
+import { buttonClasses } from "@/components/ui/buttonStyles";
+import GuitarCard from "@/components/GuitarCard";
+import Reveal from "@/components/Reveal";
+import type { Guitarra } from "@/types/guitarra";
 
 const cifras = [
   { valor: "1994", etiqueta: "Año de apertura del taller" },
@@ -16,9 +14,13 @@ const cifras = [
   { valor: "100 %", etiqueta: "Ajuste artesanal antes de la entrega" },
 ];
 
-export default function Home() {
-  const seleccionRef = useReveal();
-  const cierreRef = useReveal();
+export default async function Home() {
+  const guitarras = await getGuitarras();
+  const hero = guitarras.find((guitarra) => guitarra.id === 2) ?? guitarras[0];
+  const marcas = [...new Set(guitarras.map((guitarra) => guitarra.marca))];
+  const destacadas = [guitarras[0], guitarras[5], guitarras[10]].filter(
+    (guitarra): guitarra is Guitarra => guitarra !== undefined,
+  );
 
   return (
     <>
@@ -39,42 +41,44 @@ export default function Home() {
               cuidamos el sonido de quien las toca.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link to="/catalogo" className={buttonClasses("solid")}>
+              <Link href="/catalogo" className={buttonClasses("solid")}>
                 Explorar el catálogo
               </Link>
-              <Link to="/acerca" className={buttonClasses("outline")}>
+              <Link href="/acerca" className={buttonClasses("outline")}>
                 Conoce el taller
               </Link>
             </div>
           </div>
 
-          <div className="lg:col-span-5">
-            <figure className="relative">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
-                <img
-                  src={hero.imagen}
-                  alt={`${hero.nombre} — ${hero.marca}`}
-                  className="h-full w-full object-cover"
-                />
-                <span className="absolute top-5 left-5 rounded-full bg-paper/90 px-4 py-1.5 text-sm font-medium uppercase tracking-[0.18em] text-ink">
-                  Pieza destacada
-                </span>
-              </div>
-              <figcaption className="mt-5 flex items-start justify-between gap-6 border-t border-line/80 pt-4">
-                <div>
-                  <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
-                    {hero.marca}
-                  </p>
-                  <p className="mt-1 font-display text-2xl leading-tight text-ink">
-                    {hero.nombre}
-                  </p>
+          {hero && (
+            <div className="lg:col-span-5">
+              <figure className="relative">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
+                  <img
+                    src={hero.imagen}
+                    alt={`${hero.nombre} — ${hero.marca}`}
+                    className="h-full w-full object-cover"
+                  />
+                  <span className="absolute top-5 left-5 rounded-full bg-paper/90 px-4 py-1.5 text-sm font-medium uppercase tracking-[0.18em] text-ink">
+                    Pieza destacada
+                  </span>
                 </div>
-                <p className="shrink-0 font-display text-xl text-ink">
-                  {formatPrice(hero.precio)}
-                </p>
-              </figcaption>
-            </figure>
-          </div>
+                <figcaption className="mt-5 flex items-start justify-between gap-6 border-t border-line/80 pt-4">
+                  <div>
+                    <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">
+                      {hero.marca}
+                    </p>
+                    <p className="mt-1 font-display text-2xl leading-tight text-ink">
+                      {hero.nombre}
+                    </p>
+                  </div>
+                  <p className="shrink-0 font-display text-xl text-ink">
+                    {formatPrice(hero.precio)}
+                  </p>
+                </figcaption>
+              </figure>
+            </div>
+          )}
         </Container>
       </section>
 
@@ -93,6 +97,7 @@ export default function Home() {
         </Container>
       </section>
 
+      {/* Ticker: CSS puro, no necesita JavaScript de cliente. */}
       <section aria-label="Marcas representadas" className="border-b border-line/70 bg-paper-deep/40 py-6">
         <div className="marquee-mask overflow-hidden">
           <div className="marquee-track flex w-max items-center">
@@ -125,11 +130,7 @@ export default function Home() {
 
       <section className="py-20 sm:py-28">
         <Container>
-          <div
-            ref={seleccionRef}
-            data-reveal=""
-            className="flex flex-wrap items-end justify-between gap-6"
-          >
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">
                 01 — Selección
@@ -139,19 +140,19 @@ export default function Home() {
               </h2>
             </div>
             <Link
-              to="/catalogo"
+              href="/catalogo"
               className="nav-link py-1 text-sm font-medium uppercase tracking-[0.16em] text-ink"
             >
-              Ver las 12 piezas
+              Ver las {guitarras.length} piezas
             </Link>
-          </div>
+          </Reveal>
 
           <div className="mt-12 grid grid-cols-1 gap-10 md:grid-cols-3">
             {destacadas.map((guitarra, index) => (
               <div
                 key={guitarra.id}
                 className="stagger-item"
-                style={{ "--stagger": index }}
+                style={staggerStyle(index)}
               >
                 <GuitarCard guitarra={guitarra} index={guitarra.id - 1} />
               </div>
@@ -162,11 +163,7 @@ export default function Home() {
 
       <section className="border-t border-line/70">
         <Container className="grid gap-10 py-20 sm:py-24 lg:grid-cols-12">
-          <div
-            ref={cierreRef}
-            data-reveal=""
-            className="lg:col-span-7"
-          >
+          <Reveal className="lg:col-span-7">
             <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">
               02 — Encargos
             </p>
@@ -174,7 +171,7 @@ export default function Home() {
               Cada instrumento tiene una historia. La tuya empieza con una
               conversación.
             </h2>
-          </div>
+          </Reveal>
           <div className="lg:col-span-5 lg:pl-10">
             <p className="text-base leading-relaxed text-ink-soft">
               Trabajamos encargos a medida, restauraciones y puestas a punto.
@@ -182,7 +179,7 @@ export default function Home() {
               compromiso.
             </p>
             <Link
-              to="/contacto"
+              href="/contacto"
               className={`${buttonClasses("outline")} mt-8`}
             >
               Hablemos

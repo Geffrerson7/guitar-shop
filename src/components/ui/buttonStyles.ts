@@ -8,8 +8,13 @@ const variants = {
     "border-ink/25 bg-transparent text-ink hover:border-ink hover:bg-ink hover:text-paper active:translate-y-px",
   quiet:
     "border-transparent bg-transparent px-2 text-ink hover:text-accent active:translate-y-px",
-};
+} as const;
 
-export function buttonClasses(variant = "solid", className = "") {
-  return `${base} ${variants[variant] ?? variants.solid} ${className}`;
+export type ButtonVariant = keyof typeof variants;
+
+export function buttonClasses(
+  variant: ButtonVariant = "solid",
+  className = "",
+): string {
+  return `${base} ${variants[variant]} ${className}`;
 }

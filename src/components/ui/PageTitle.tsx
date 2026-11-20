@@ -1,10 +1,20 @@
+import type { ReactNode } from "react";
+
+type PageTitleProps = {
+  eyebrow?: string;
+  title: ReactNode;
+  intro?: ReactNode;
+  className?: string;
+  children?: ReactNode;
+};
+
 export default function PageTitle({
   eyebrow,
   title,
   intro,
   className = "",
   children,
-}) {
+}: PageTitleProps) {
   return (
     <header className={`max-w-5xl ${className}`}>
       {eyebrow && (

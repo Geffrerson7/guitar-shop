@@ -1,38 +1,44 @@
-import { useParams, Link } from "react-router-dom";
-import { guitarras } from "../data/guitarras";
-import { formatPrice } from "../utils/formatPrice";
-import Container from "../components/ui/Container";
-import { buttonClasses } from "../components/ui/buttonStyles";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getGuitarraById, getGuitarras } from "@/lib/guitarras";
+import { formatPrice } from "@/utils/formatPrice";
+import Container from "@/components/ui/Container";
+import { buttonClasses } from "@/components/ui/buttonStyles";
 
 const enlaceVolver =
   "inline-flex items-center gap-2 rounded-sm text-sm font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-accent";
 
-export default function Producto() {
-  const { id } = useParams();
-  const guitarra = guitarras.find((g) => g.id === Number(id));
+/** Ids que no son enteros positivos no llegan a la capa de datos. */
+function parseId(raw: string): number | null {
+  return /^[1-9]\d*$/.test(raw) ? Number(raw) : null;
+}
 
-  if (!guitarra) {
-    return (
-      <Container className="py-24">
-        <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">
-          02 — Detalle
-        </p>
-        <h1 className="mt-6 max-w-3xl font-display text-h1 text-balance text-ink">
-          Esta pieza ya no está en el taller.
-        </h1>
-        <p className="mt-6 max-w-xl text-lg text-ink-soft">
-          Puede que se haya vendido o que el enlace no sea correcto. Te
-          esperamos en el catálogo.
-        </p>
-        <Link
-          to="/catalogo"
-          className={`${buttonClasses("outline")} mt-10`}
-        >
-          ← Volver al catálogo
-        </Link>
-      </Container>
-    );
-  }
+export async function generateStaticParams() {
+  const guitarras = await getGuitarras();
+  return guitarras.map((guitarra) => ({ id: String(guitarra.id) }));
+}
+
+// Título básico por producto; la Metadata API completa llega en la Fase 5.
+export async function generateMetadata({
+  params,
+}: PageProps<"/producto/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const numericId = parseId(id);
+  const guitarra = numericId === null ? null : await getGuitarraById(numericId);
+  return guitarra
+    ? { title: `${guitarra.nombre} — Voltio & Madera` }
+    : {};
+}
+
+export default async function Producto({
+  params,
+}: PageProps<"/producto/[id]">) {
+  const { id } = await params;
+  const numericId = parseId(id);
+  const guitarra = numericId === null ? null : await getGuitarraById(numericId);
+
+  if (!guitarra) notFound();
 
   const consulta = `mailto:info@voltioymadera.es?subject=${encodeURIComponent(
     `Consulta sobre ${guitarra.nombre}`,
@@ -44,7 +50,7 @@ export default function Producto() {
         <nav aria-label="Migas de pan" className="mb-10">
           <ol className="flex flex-wrap items-center gap-2 text-sm text-ink-soft">
             <li>
-              <Link to="/catalogo" className="rounded-sm hover:text-accent">
+              <Link href="/catalogo" className="rounded-sm hover:text-accent">
                 Catálogo
               </Link>
             </li>
@@ -82,7 +88,7 @@ export default function Producto() {
 
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <Link to="/catalogo" className={enlaceVolver}>
+              <Link href="/catalogo" className={enlaceVolver}>
                 ← Volver al catálogo
               </Link>
 

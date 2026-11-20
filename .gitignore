@@ -8,9 +8,20 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
 *.local
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Environment
+.env*
+!.env.example
+
+# Vercel
+.vercel
 
 # Package managers: pnpm is the single source of truth (see packageManager)
 package-lock.json
