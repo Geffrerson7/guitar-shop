@@ -2,29 +2,13 @@
 
 /* ---------------------------------------------------------------------------
    Tipografía autoalojada
-   Dos familias, subset latino, woff2 y font-display: swap.
-   Presupuesto total: ~93 kB (límite de la Fase 3: 120 kB).
+   Bodoni Moda + Inter, subset latino, woff2. Se cargan con next/font/local en
+   `lib/fonts.ts`, que expone las variables --font-bodoni y --font-inter en
+   <html> (cada una ya incluye su fuente de respaldo ajustada).
 --------------------------------------------------------------------------- */
-@font-face {
-  font-family: "Bodoni Moda";
-  src: url("/fonts/bodoni-moda-latin.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400 900;
-  font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
-    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/inter-latin.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
-    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+@theme inline {
+  --font-display: var(--font-bodoni);
+  --font-sans: var(--font-inter);
 }
 
 /* ---------------------------------------------------------------------------
@@ -32,9 +16,6 @@
    Se exponen como utilidades de Tailwind: bg-paper, text-ink, font-display…
 --------------------------------------------------------------------------- */
 @theme {
-  --font-display: "Bodoni Moda", "Times New Roman", ui-serif, Georgia, serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-
   --color-paper: #f5efe4;
   --color-paper-deep: #ebe1d0;
   --color-ink: #1c1917;
@@ -69,7 +50,7 @@
   body {
     background-color: var(--color-paper);
     color: var(--color-ink);
-    font-family: var(--font-sans);
+    font-family: var(--font-inter);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     background-image:

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { bodoniModa, inter } from "@/lib/fonts";
 import "./globals.css";
 
 // Metadatos mínimos. La Metadata API completa (títulos por ruta, Open Graph,
@@ -20,7 +21,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es" data-scroll-behavior="smooth">
+    <html
+      lang="es"
+      data-scroll-behavior="smooth"
+      className={`${bodoniModa.variable} ${inter.variable}`}
+    >
       <body>
         {/* Sin JavaScript el reveal on scroll no se activa: el contenido
             renderizado en servidor debe verse igualmente. */}

@@ -62,7 +62,10 @@ The dev server runs on `http://localhost:3000`.
 │   ├── not-found.tsx        # 404
 │   ├── error.tsx            # Route error boundary (retry)
 │   ├── global-error.tsx     # Root layout error boundary
-│   └── globals.css          # Tailwind entry, tokens, fonts and motion
+│   └── globals.css          # Tailwind entry, tokens and motion
+├── assets/                  # Files imported by code (hashed and optimized at build)
+│   ├── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
+│   └── guitarras/           # Product images (WebP sources, 512×512)
 ├── components/              # Shared components
 │   └── ui/                  # Container, Button, PageTitle and shared styles
 ├── data/                    # Local product data (only read by lib/)
@@ -70,9 +73,8 @@ The dev server runs on `http://localhost:3000`.
 ├── lib/                     # Data access layer (getGuitarras…)
 ├── types/                   # Domain types (Guitarra, Categoria)
 ├── utils/                   # Pure helpers (formatPrice, staggerStyle)
-├── public/                  # Static assets served as-is
-│   ├── favicon.svg
-│   └── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
+├── public/                  # Static files served as-is
+│   └── favicon.svg
 ├── docs/
 │   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
 │   └── DIRECCION_DE_ARTE.md # Art direction and design system
@@ -139,13 +141,27 @@ Vercel is the current choice and gives preview deployments per pull request.
 It is provisional, so the app avoids platform-only APIs: `pnpm build` +
 `pnpm start` runs it on any Node server.
 
+## Images
+
+Product images go through `components/ProductImage.tsx`, a thin wrapper over
+`next/image` (`fill` + `sizes`). It accepts a static import (today) or a
+remote URL (Cloudinary, Phase 13), so pages do not change when the source does.
+
+- Served as AVIF with WebP fallback (`images.formats` in `next.config.ts`).
+- `sizes` presets per layout live next to the component (`imageSizes`).
+- Lazy by default; pass `lcp` only to the LCP image of a route (Home hero,
+  first catalog card, product detail), which switches it to
+  `loading="eager"` + `fetchPriority="high"`.
+- No remote origins are allowed yet (`remotePatterns: []`).
+
 ## Design system
 
 The visual direction is documented in
 [`docs/DIRECCION_DE_ARTE.md`](docs/DIRECCION_DE_ARTE.md). In short:
 
 - **Type:** Bodoni Moda (display) + Inter (UI), self-hosted variable woff2
-  subsets in `public/fonts/` (~95 kB total).
+  subsets in `assets/fonts/`, loaded with `next/font/local` from `lib/fonts.ts`
+  (~92 kB total, preloaded, metric-adjusted fallbacks).
 - **Tokens:** warm paper/ink palette, 1 px rules, fluid display scale with
   `clamp()`, maximum 3 weights.
 - **Layout:** 12-column editorial grid; the catalog alternates 7/5 and 5/7
@@ -158,8 +174,8 @@ The visual direction is documented in
 
 See [`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Next up:
 
-- Product images are remote `<img>` tags; `next/image` and local assets arrive
-  in Phase 4, `next/font/local` too.
+- Product photos are 512×512 sources: enough for cards, too small for
+  full-bleed images on desktop (they bleed only on mobile and tablet).
 - Metadata is a basic title and description; the full Metadata API, sitemap
   and Open Graph arrive in Phase 5.
 - No automated tests and no CI yet (Phase 6).

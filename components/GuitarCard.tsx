@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Guitarra } from "@/types/guitarra";
 import { formatPrice } from "@/utils/formatPrice";
+import ProductImage, { imageSizes } from "./ProductImage";
 
 function formatIndex(index: number): string {
   return String(index + 1).padStart(2, "0");
@@ -10,12 +11,18 @@ type GuitarCardProps = {
   guitarra: Guitarra;
   index?: number;
   wide?: boolean;
+  /** `sizes` de la imagen; por defecto, 7 o 5 columnas del catálogo según `wide`. */
+  sizes?: string;
+  /** Marca la imagen como LCP de la ruta (solo la primera tarjeta visible). */
+  lcp?: boolean;
 };
 
 export default function GuitarCard({
   guitarra,
   index = 0,
   wide = false,
+  sizes,
+  lcp = false,
 }: GuitarCardProps) {
   return (
     <Link
@@ -28,12 +35,12 @@ export default function GuitarCard({
             wide ? "aspect-[16/11]" : "aspect-[4/5]"
           }`}
         >
-          <img
+          <ProductImage
             src={guitarra.imagen}
             alt={`${guitarra.nombre} — ${guitarra.marca}`}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
+            sizes={sizes ?? (wide ? imageSizes.cardWide : imageSizes.cardNarrow)}
+            lcp={lcp}
+            className="transition-transform duration-700 ease-out group-hover:scale-[1.045]"
           />
 
           <span className="absolute top-4 left-4 rounded-full bg-paper/90 px-3 py-1 text-sm font-medium tracking-[0.16em] text-ink">

@@ -1,4 +1,16 @@
 import type { Guitarra } from "@/types/guitarra";
+import imgGibsonEs335 from "@/assets/guitarras/1964-gibson-es-335.webp";
+import imgBlackBeautyCustom from "@/assets/guitarras/black-beauty-custom.webp";
+import imgClassicalConcert1a from "@/assets/guitarras/classical-concert-1a.webp";
+import imgDeluxeDriveBundle from "@/assets/guitarras/deluxe-drive-bundle.webp";
+import imgGrandAuditoriumC12 from "@/assets/guitarras/grand-auditorium-c12.webp";
+import imgHeritageCustomTStyle from "@/assets/guitarras/heritage-custom-t-style.webp";
+import imgJazzMasterpieceHollow from "@/assets/guitarras/jazz-masterpiece-hollow.webp";
+import imgMasterbuilt57SType from "@/assets/guitarras/masterbuilt-57-s-type.webp";
+import imgModernEagleV from "@/assets/guitarras/modern-eagle-v.webp";
+import imgOmSeriesArtisan from "@/assets/guitarras/om-series-artisan.webp";
+import imgProSeries5StringBass from "@/assets/guitarras/pro-series-5-string-bass.webp";
+import imgRoyalReverbCombo from "@/assets/guitarras/royal-reverb-combo.webp";
 
 export const guitarras: Guitarra[] = [
   {
@@ -8,7 +20,7 @@ export const guitarras: Guitarra[] = [
     precio: 2450,
     categoria: 'Eléctricas',
     badge: 'Nuevo',
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQJkDpsxdk8f0uAJLG-5kNpVcuo4uoxxGOVkekQJpnrRnSOk19FzPuYwBHV3ROoJ7DY7GbHLVIJCabuhTzZwVCnIsNPiaGm0uzLFpOV4gQGA5qk4a4sEJlMk_0ZH5NE90BGaKDNQV6P8LYlKloyn37E2-eekuG7Rt6NNqoSUpbQF5AHKI1g6U_eVNhXgCjIJ5yAjimnR0fArFBL_C6rPCSpDWGe70WZCnoW3mWm25PlM0D4OIo3o_si89udSF2goRfoh3vaqkK-QIr',
+    imagen: imgHeritageCustomTStyle,
     descripcion: 'Una obra maestra de la artesanía moderna con sonido cálido y sustain infinito.',
     specs: ['Cuerpo de Aliso seleccionado', 'Mástil de Arce', 'Pastillas Custom Shop Hand-Wound'],
   },
@@ -19,7 +31,7 @@ export const guitarras: Guitarra[] = [
     precio: 8900,
     categoria: 'Eléctricas',
     badge: 'Vintage',
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAVFrIa3lYgsfx5MJWeDpuQG_OrmhISBVxf1y2NKuqmrGzkLFlhkM4uZU_AIMZ0UQxIJd4rvx8XaYE6fbD_whPskV_bxV4zDlIJE3vceL1vpUaSP6wGaygjhQT0uiYE0QOghsFqQY0rpmj2gywOimUFc6oH6K3fopvVXtRYmmgDmW0DmNHKNi3DivTq-An92eeurV5ZJ_zMdGZhev6VMvAaqy6YJ3R6FsdN1LHcpf41QoHgulzdgysJooNQ0bMW6_H4OWhc5b2t_iwW',
+    imagen: imgGibsonEs335,
     descripcion: 'Semi-hollowbody icónica con sonido aterciopelado y laca nitrocelulósica original.',
     specs: ['Cuerpo semi-hueco de arce laminado', 'Mástil de caoba', 'Pastillas PAF humbucker originales'],
   },
@@ -30,7 +42,7 @@ export const guitarras: Guitarra[] = [
     precio: 3100,
     categoria: 'Acústicas',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDaBWMeIoSmMDT5-hXtZGCE_2Xy2xufaqU9k52a7VDs_FYLgCQHEVjBlfkNyoULTXtu--d3MLGgjX1ThhhJcGOXxvI_UoB_eHaJ-bl_dJTWa7nCZ3USEid6ZGvHxPGMnjcwcdLgO8iGbXs6K3oe-jWl8PV3TqEEfcCQywO3R0AGwhoDV3IHyvPX0xXsKBvYgPSL5gRAAooLK8dGIE8bDma5HSvklY1ksy_otCTRykSnCBLu8VgVu7t76oGuuiaYatqABZsOebt4DxE1',
+    imagen: imgOmSeriesArtisan,
     descripcion: 'Acústica artesanal con tapa de pícea maciza. Proyección y calidez inigualables.',
     specs: ['Tapa de Pícea maciza', 'Fondo y aros de Palosanto', 'Diapasón de Ébano'],
   },
@@ -41,7 +53,7 @@ export const guitarras: Guitarra[] = [
     precio: 5200,
     categoria: 'Eléctricas',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDPQI24Sx7EJM647ixIONGqQPR1bMk2cqZzcwSavyDdGOTdPfrFOQidmvZ4Gyi5bY0l1Rx4eeazoYliQnsDK8YnY82aJOYj77dawIqnCdrzkC1ldafBLu3lGJKJ1c_8AmsmtECYfsdMuN-unXFs6XwDBG5g9pE5ok49T4PZdkh3245xrbg2k980dgixTIzIvz9F6toQTAxLlx1a8w-AoRYDrv8nI7GnYuI4g4KESRZFWpyREaJNHjhmuAgMYf3_CmN7Pmrj7-cx6evx',
+    imagen: imgBlackBeautyCustom,
     descripcion: 'Les Paul Custom con hardware dorado. Graves profundos y agudos cristalinos.',
     specs: ['Cuerpo de Caoba con tapa de Arce', 'Mástil de Caoba', 'Pastillas 490R y 498T'],
   },
@@ -52,7 +64,7 @@ export const guitarras: Guitarra[] = [
     precio: 4750,
     categoria: 'Acústicas',
     badge: 'Edición Limitada',
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBSALsM_K0U8GE5Kfvj_K9yfolvrNaCT825UWNvjn2K395zq6iWcIMZW4nt8tIjvyzc9v4FlE6Ml3bsRddhYk3AHd8OkUP7V_JWCHhXDGs1W76YwsAVfrRptOTW8O5Uxq7xMNa48zDBhhXzOYvUZxXE1SIHm0NqbZG2X3OGbg9J73IYltHQLN3ky80N4Dmi_ZbwL_1pmZ0W7NPzopP5rQG7sHHQ3FIoJb19tR63YkjntaD16Z97mp4ulne4OtCZfeZsVsFuNSqKP5FP',
+    imagen: imgClassicalConcert1a,
     descripcion: 'Guitarra clásica de concierto con incrustaciones de nácar.',
     specs: ['Tapa de Pícea alemana', 'Fondo de Palosanto de India', 'Incrustaciones de nácar'],
   },
@@ -63,7 +75,7 @@ export const guitarras: Guitarra[] = [
     precio: 4200,
     categoria: 'Eléctricas',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDg-Y69iHpewC1kCGi8Hs0PGe3-FTnNntaWNpI2xX2a_MOY7BPIVyc3N9YR5kYQfzBSj2uxKyriaTvU-tUC6aYCb7yfOTo-eQ0L0AHf3JtYWbd62J5HhvHTV2dnYJukCrguH6lmUIQOZ69xQSTfgsdRijo3tZ8csDn3Gzqk3-_a9P1ZgT0Lr61hozj_WZE1oCSLjgHSPGw4DupgTDxczm2uJdhVATTTGRo_7sWCnlhTQeZDgzlkqiLqaxtqhW7LRTuf_XUKGbYY8Mg1',
+    imagen: imgModernEagleV,
     descripcion: 'Arce quilted azul vibrante con pájaros incrustados en el diapasón.',
     specs: ['Tapa de Arce Quilted', 'Mástil de Caoba', 'Pastillas 58/15 LT'],
   },
@@ -74,7 +86,7 @@ export const guitarras: Guitarra[] = [
     precio: 6100,
     categoria: 'Eléctricas',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB9fa80EEfG6OiK1cw2h_u1_ZEzJUwgNYt4Q2VLBCkPCgBhhejBjVGGjodYVn1F2O14oB2CfkvLEGZVoErC8D3_XvoGJkJ-gRC7M7wqgRPuBKz-y4f29QZeKre_Uz-C7AVl0FapugsDqz83IwjgfJUdyMf2tApOrRtwweTpxWUbpG6ggkvradfOz2ttBDXF-YMriLzm1dZOERraOjidT_pQrFK1Bl35vp4RV-HVqHxrUkS-3vIsAtlXgFGRGHu8iKxxs7MxIRx6Vhxq',
+    imagen: imgMasterbuilt57SType,
     descripcion: 'Reissue envejecido a mano. El sonido que definió el rock and roll.',
     specs: ['Cuerpo de Aliso', 'Mástil de Arce', 'Pastillas Custom Shop'],
   },
@@ -85,7 +97,7 @@ export const guitarras: Guitarra[] = [
     precio: 2800,
     categoria: 'Bajos',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAHFZdtSsOK5tPc2wnLzej6PR4h9S79CBm6eGaZ4i9-HUtxgcdMe1Qx7vGAdV-nhx7zoP2W8YdyH9JEdDe8jlwOH5Vi-gQsuhqj7m4xdDw4u4w_tejKWUK3EIyrJXq1UTDUxwQHSDv-Z4DY8vSOPsPXLlyHBh8vUpwhIOLg0g9-87X1S0KG3slVNS8YVplIoU1TvQrQdcO2M7yNvjujXUVynl_WWiu6Hoe-6D0FMJl3JVQSgIiIEMRBlF4iB1rOe79hLhahkBGvP0A0',
+    imagen: imgProSeries5StringBass,
     descripcion: 'Bajo de 5 cuerdas con cuerpo de fresno. Definición y potencia.',
     specs: ['Cuerpo de Fresno', 'Diapasón de Wenge', 'Pastillas MEC Active/Passive'],
   },
@@ -96,7 +108,7 @@ export const guitarras: Guitarra[] = [
     precio: 1890,
     categoria: 'Accesorios',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAwRmp-gj1kGCFGxpPRly0Omld5QJSsVzwUbijBu4RlBxn6r3USUWNEB8IXPlqCuFvqHQQYbG4pOn8ZRZPLbyxvyXW8cuZ1HbzQaD6wsq7-qpi42Xuj8F-kh39Ulv9VbJSPS0CCDQUEdZeF5R2qiO7yfcksZy_mFaaB8cBdRLzcIybJd04l_1-JOITZKvS98cC1RIy7EkJRhIbLPuRlCqFw92MXeClRc-1i5kiCCDY51Eu9zfe-6_zLUAugOG3HRV5tcoM5zdG8Vtfd',
+    imagen: imgRoyalReverbCombo,
     descripcion: 'Amp valvular con reverberación. El sonido que soñás desde que agarraste una guitarra.',
     specs: ['Potencia de 40W', 'Altavoz Celestion Vintage 30', 'Reverb a válvula Accutronics'],
   },
@@ -107,7 +119,7 @@ export const guitarras: Guitarra[] = [
     precio: 450,
     categoria: 'Accesorios',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAa-dLEMee6noQztC_seRp6AOslmS1Hl0t8AuRdqXCmoiAqg0ZO6N1DhGODeSyCTJSpmZi_UsvejyDAAlyxVbCw-TbJmb8PK1ueb2sCojmuwRLfxKmlV-R53SfL4ymzblKFVPiWYTgu8eMlUftf24vIGpFmJSbKHK8ZjssNa8TuxVko625Qq25mUFpyuBFc6YFf5VA6BT91bSOqcqUA9MOoKmhX558KYavRxQTxnhPtGhmXSf_ojiOMdpbqKjpPKTs4LqkF0qAY1q8C',
+    imagen: imgDeluxeDriveBundle,
     descripcion: 'Bundle de pedales boutique: overdrive, distorsión y boost.',
     specs: ['Overdrive analógico', 'Distorsión de alta ganancia', 'Boost conmutable'],
   },
@@ -118,7 +130,7 @@ export const guitarras: Guitarra[] = [
     precio: 3800,
     categoria: 'Acústicas',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBVhOX0y77VUznbBZlqJz5HK3I260dV_EZUZAr-rqiBGcu48SqNVPnyB_l_eTNdgk_EHFmbM3u1xECPaOnJoygfe_HnEWCmOtNB-iAtNWNExZKTulg8iT8KB9TMHv1Y93C7dUkhWOl7RAXVJ_3L9mPVwXiEvj5xTlPbrLPZlGF0SMLo7ULVTNJgpxnkvd33tPtRbmlNevY8XO-3r0YzOEA0Ob1N6TlQntoNKlznTj9-Rt4xiy7EQWxKTuN01UaqwURM_Jg9gsT4ChUg',
+    imagen: imgGrandAuditoriumC12,
     descripcion: 'Taylor Grand Auditorium. Versatilidad absoluta para cualquier estilo.',
     specs: ['Tapa de Pícea maciza', 'Fondo de Palosanto', 'Pastillas Expression System 2'],
   },
@@ -129,7 +141,7 @@ export const guitarras: Guitarra[] = [
     precio: 3400,
     categoria: 'Eléctricas',
     badge: null,
-    imagen: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDBtJy0IsawTAmUk4Y9ur4iX-pxNRApcbUP9mA4cw5huTotxKHmTjUnOmIyem51PHypeXlBH38MtDT5zNf3-7x8bZJeETfkcWScizXHWJZZV89juJZ6GuSGTu2-kVqMykNPKdsC7WfMfqnwoHc1tOu2TLNZm2Quuq3scqGKjUUJQzJblP5rOGOLrKMiCZqHNCPTCjM0vnWLV32pYpvGaW8IZd9mgZr1vsSlSyd_gknoO-WCzqvQWeLU_imgB_xDvDPR4lx_uo12aLz8',
+    imagen: imgJazzMasterpieceHollow,
     descripcion: 'Hollowbody de jazz con tapa de arce tallada. El estándar de oro.',
     specs: ['Cuerpo hueco de Arce tallado', 'Mástil de Arce', 'Pastillas Floating Mini-Humbucker'],
   },

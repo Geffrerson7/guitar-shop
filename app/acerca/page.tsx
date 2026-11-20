@@ -4,6 +4,7 @@ import Container from "@/components/ui/Container";
 import PageTitle from "@/components/ui/PageTitle";
 import Reveal from "@/components/Reveal";
 import { buttonClasses } from "@/components/ui/buttonStyles";
+import ProductImage, { imageSizes } from "@/components/ProductImage";
 
 const cifras = [
   { valor: "1994", etiqueta: "Año en que abrimos el taller" },
@@ -47,11 +48,11 @@ export default async function Acerca() {
 
         {retrato && (
           <figure className="mt-14">
-            <div className="aspect-[16/10] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
-              <img
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-line/80 bg-paper-deep">
+              <ProductImage
                 src={retrato.imagen}
                 alt={`${retrato.nombre} — ${retrato.marca}`}
-                className="h-full w-full object-cover"
+                sizes={imageSizes.container}
               />
             </div>
             <figcaption className="mt-4 text-sm text-ink-soft">
