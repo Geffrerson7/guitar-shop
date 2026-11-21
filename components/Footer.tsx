@@ -2,11 +2,14 @@ import Link from "next/link";
 import LinkSpinner from "./LinkSpinner";
 import Container from "./ui/Container";
 
+// Enlazan al catálogo filtrado (Fase 9, cierra A11Y-01). Los slugs son los
+// de la tabla `Categoria`; se mantienen aquí para que el layout no consulte
+// la base de datos en cada página.
 const categorias = [
-  "Guitarras eléctricas",
-  "Guitarras acústicas",
-  "Bajos",
-  "Amplificadores",
+  { etiqueta: "Guitarras eléctricas", slug: "electricas" },
+  { etiqueta: "Guitarras acústicas", slug: "acusticas" },
+  { etiqueta: "Bajos", slug: "bajos" },
+  { etiqueta: "Amplificación y accesorios", slug: "accesorios" },
 ];
 
 const servicios = [
@@ -42,8 +45,15 @@ export default function Footer() {
               Colección
             </h2>
             <ul className="space-y-3 text-sm text-paper/70">
-              {categorias.map((categoria) => (
-                <li key={categoria}>{categoria}</li>
+              {categorias.map(({ etiqueta, slug }) => (
+                <li key={slug}>
+                  <Link
+                    href={`/catalogo?categoria=${slug}`}
+                    className={enlaceFooter}
+                  >
+                    <LinkSpinner>{etiqueta}</LinkSpinner>
+                  </Link>
+                </li>
               ))}
               <li>
                 <Link href="/catalogo" className={`${enlaceFooter} mt-2`}>
