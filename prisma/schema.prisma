@@ -41,4 +41,9 @@ model Producto {
 
   @@index([categoriaId])
   @@index([activo])
+  // Filtros y orden del catálogo (Fase 9).
+  @@index([marca])
+  @@index([precioCentimos])
+  @@index([nombre])
+  @@index([creadoEn])
 }
