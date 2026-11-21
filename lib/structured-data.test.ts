@@ -6,10 +6,11 @@ const guitarra: Guitarra = {
   id: 3,
   nombre: "OM-Series Artisan",
   marca: "Voltio & Madera",
-  precio: 3100,
+  slug: "om-series-artisan",
+  precioCentimos: 310_000,
   categoria: "Acústicas",
   badge: null,
-  imagen: "/_next/static/media/om-series-artisan.webp",
+  imagen: "/guitarras/om-series-artisan.webp",
   descripcion: "Acústica artesanal.",
   specs: [],
 };

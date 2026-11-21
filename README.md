@@ -19,6 +19,8 @@ English.
 | Language  | TypeScript 6 (`strict`, no explicit `any`)                   |
 | UI        | React 19 — Server Components by default                      |
 | Styling   | Tailwind CSS 4 (via `@tailwindcss/postcss`)                  |
+| Database  | PostgreSQL 18 + Prisma 7 (`@prisma/adapter-pg`)              |
+| Env vars  | Validated with Zod at startup (`env.ts`)                     |
 | Linting   | ESLint 10 flat config with `eslint-config-next` (+ TS rules) |
 | Format    | Prettier 3 (`eslint-config-prettier`), LF line endings       |
 | Testing   | Vitest + Testing Library (unit), Playwright + axe (e2e)      |
@@ -30,24 +32,34 @@ English.
 - Node.js `>=22.12.0` (see `.nvmrc`)
 - pnpm `>=10` — **this project uses pnpm**; `package-lock.json` and `yarn.lock`
   are git-ignored on purpose
+- Docker (for the local PostgreSQL in `docker-compose.yml`)
 
 ## Getting started
 
 ```bash
-pnpm install
+cp .env.example .env    # DATABASE_URL points to the Docker database
+pnpm install            # also runs `prisma generate`
+pnpm db:up              # docker compose up -d --wait (PostgreSQL 18)
+pnpm db:migrate         # prisma migrate dev: applies prisma/migrations
+pnpm db:seed            # 12 products and 4 categories (idempotent)
 pnpm dev
 ```
 
-The dev server runs on `http://localhost:3000`.
+The dev server runs on `http://localhost:3000`. `pnpm build` also needs the
+database: the catalog and product pages are prerendered from it.
 
 ### Environment variables
 
-Copy `.env.example` to `.env.local` when you need them. None is required for
-local development.
+`env.ts` validates them with Zod and is imported by `next.config.ts`, so
+`next dev` and `next build` stop at startup, naming the variable, if a required
+one is missing or malformed. Copy `.env.example` to `.env` (git-ignored); the
+Prisma CLI reads `.env` too.
 
-| Variable   | Purpose                                                                                                                                                                                                                                                                                                                                                     |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SITE_URL` | Public URL of the site, without trailing slash. Used for canonical URLs, Open Graph, `sitemap.xml`, `robots.txt` and JSON-LD. Falls back to `VERCEL_PROJECT_PRODUCTION_URL` and then to `http://localhost:3000`. Set it **at build time and at runtime**: static pages read it during the build, dynamic responses (such as a product 404) at request time. |
+| Variable       | Purpose                                                                                                                                                                                                                                                                                                                                                     |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL` | **Required.** PostgreSQL URL used by the running app. Locally, the Docker database. On Neon, the **pooled** string (`-pooler` host): serverless functions open many short connections.                                                                                                                                                                      |
+| `DIRECT_URL`   | Optional. Direct (non-pooled) Neon string for `prisma migrate`. When unset, migrations use `DATABASE_URL`.                                                                                                                                                                                                                                                  |
+| `SITE_URL`     | Public URL of the site, without trailing slash. Used for canonical URLs, Open Graph, `sitemap.xml`, `robots.txt` and JSON-LD. Falls back to `VERCEL_PROJECT_PRODUCTION_URL` and then to `http://localhost:3000`. Set it **at build time and at runtime**: static pages read it during the build, dynamic responses (such as a product 404) at request time. |
 
 ## Scripts
 
@@ -63,14 +75,24 @@ local development.
 | `pnpm test`         | Run the Vitest unit tests once               |
 | `pnpm test:watch`   | Run Vitest in watch mode                     |
 | `pnpm test:e2e`     | Run Playwright against the production build  |
+| `pnpm db:up`        | Start the local PostgreSQL (Docker Compose)  |
+| `pnpm db:migrate`   | Create/apply migrations in development       |
+| `pnpm db:deploy`    | Apply pending migrations (CI, production)    |
+| `pnpm db:seed`      | Load the catalog (idempotent upsert)         |
+| `pnpm db:studio`    | Open Prisma Studio                           |
 
 ## Testing
 
 | Layer         | Tool                                        | What it covers                                                                                               | Where                              |
 | ------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
-| Unit          | Vitest + Testing Library (jsdom)            | Utilities, data layer, site URL, SEO metadata, JSON-LD, client components, `GuitarCard`                      | `**/*.test.ts(x)` next to the code |
+| Unit          | Vitest + Testing Library (jsdom)            | Utilities, env validation, data layer (Prisma mocked), site URL, SEO, JSON-LD, client components             | `**/*.test.ts(x)` next to the code |
+| Integration   | Vitest against PostgreSQL                   | Data layer on the seeded database: 12 products, unknown id, inactive product, categories                     | `lib/guitarras.db.test.ts`         |
 | End to end    | Playwright (desktop and mobile Chrome)      | Catalog, product 200/404, unknown route 404, no-JS rendering, reduced motion, `robots.txt` and `sitemap.xml` | `e2e/smoke.spec.ts`                |
 | Accessibility | axe (`@axe-core/playwright`), WCAG 2.2 A/AA | The 6 public routes; fails on any serious or critical violation                                              | `e2e/a11y.spec.ts`                 |
+
+The integration tests need `DATABASE_URL` (from `.env` or the environment) and
+a seeded database; they are skipped when it is not set. Their auxiliary rows
+use a unique suffix and are deleted afterwards.
 
 Async Server Components (the pages) are covered end to end, because Vitest
 cannot render them. Playwright runs against `next start`, not the dev server:
@@ -89,13 +111,14 @@ Every later phase adds its own tests; they are not left for the end.
 
 `.github/workflows/ci.yml` runs on every pull request and on pushes to `main`:
 
-1. `pnpm install --frozen-lockfile`
-2. `pnpm format:check`
-3. `pnpm lint`
-4. `pnpm typecheck`
-5. `pnpm test`
-6. `pnpm build`
-7. `pnpm test:e2e` (Chromium cached by Playwright version)
+1. `pnpm install --frozen-lockfile` (runs `prisma generate`)
+2. `pnpm db:deploy` and `pnpm db:seed` against a `postgres:18-alpine` service
+3. `pnpm format:check`
+4. `pnpm lint`
+5. `pnpm typecheck`
+6. `pnpm test`
+7. `pnpm build`
+8. `pnpm test:e2e` (Chromium cached by Playwright version)
 
 On failure, the Playwright report and traces are uploaded as an artifact. The
 workflow pins pnpm `12.18.0` because `package.json` does not declare
@@ -123,13 +146,17 @@ workflow pins pnpm `12.18.0` because `package.json` does not declare
 │   └── globals.css          # Tailwind entry, tokens and motion
 ├── assets/                  # Files imported by code (hashed and optimized at build)
 │   ├── fonts/               # Self-hosted woff2 subsets (Bodoni Moda + Inter)
-│   ├── guitarras/           # Product images (WebP sources, 512×512)
 │   └── og/                  # Share image for Open Graph and Twitter (1200×630)
 ├── components/              # Shared components
 │   └── ui/                  # Container, Button, PageTitle and shared styles
-├── data/                    # Local product data (only read by lib/)
+├── generated/prisma/        # Prisma Client (git-ignored, `prisma generate`)
 ├── hooks/                   # Client hooks (useReveal)
-├── lib/                     # Data access (getGuitarras…), fonts, site URL, SEO helpers
+├── lib/                     # Data access (getGuitarras…), Prisma client, fonts, site URL, SEO
+├── prisma/
+│   ├── schema.prisma        # Categoria and Producto models
+│   ├── migrations/          # Versioned SQL migrations
+│   └── seed.ts              # Idempotent catalog seed
+├── public/guitarras/        # Product images (WebP, 512×512); the DB stores the path
 ├── types/                   # Domain types (Guitarra, Categoria)
 ├── utils/                   # Pure helpers (formatPrice, staggerStyle)
 ├── e2e/                     # Playwright end-to-end and axe tests
@@ -137,24 +164,27 @@ workflow pins pnpm `12.18.0` because `package.json` does not declare
 ├── docs/
 │   ├── AUDITORIA_TECNICA.md # Technical audit and improvement roadmap
 │   └── DIRECCION_DE_ARTE.md # Art direction and design system
+├── docker-compose.yml       # Local PostgreSQL
+├── env.ts                   # Environment validation (Zod)
 ├── eslint.config.mjs
 ├── next.config.ts
 ├── playwright.config.ts
 ├── postcss.config.mjs
+├── prisma.config.ts         # Prisma CLI: schema, migrations, seed, datasource URL
 ├── tsconfig.json
 └── vitest.config.mts
 ```
 
 ## Routes
 
-| Path             | Rendering                    | Notes                                 |
-| ---------------- | ---------------------------- | ------------------------------------- |
-| `/`              | Static                       |                                       |
-| `/catalogo`      | Static                       |                                       |
-| `/producto/[id]` | SSG (`generateStaticParams`) | Unknown or invalid id → real HTTP 404 |
-| `/acerca`        | Static                       |                                       |
-| `/contacto`      | Static                       |                                       |
-| anything else    | `not-found.tsx`              | HTTP 404                              |
+| Path             | Rendering                    | Notes                                                                     |
+| ---------------- | ---------------------------- | ------------------------------------------------------------------------- |
+| `/`              | Static (regenerated by tag)  |                                                                           |
+| `/catalogo`      | Static (regenerated by tag)  |                                                                           |
+| `/producto/[id]` | SSG (`generateStaticParams`) | Unknown, invalid or inactive id → real HTTP 404; new ids render on demand |
+| `/acerca`        | Static                       |                                                                           |
+| `/contacto`      | Static                       |                                                                           |
+| anything else    | `not-found.tsx`              | HTTP 404                                                                  |
 
 Routes are resolved on the server, so deep links and reloads work without any
 hosting rewrite.
@@ -164,27 +194,57 @@ hosting rewrite.
 Every component is a **Server Component** unless it needs state, effects or
 browser APIs. Only these files declare `"use client"`:
 
-| File                    | Why                                        |
-| ----------------------- | ------------------------------------------ |
-| `components/Header.tsx` | Active link via `usePathname`              |
-| `components/Reveal.tsx` | Reveal on scroll (`IntersectionObserver`)  |
-| `hooks/useReveal.ts`    | Hook used by `Reveal`                      |
-| `app/error.tsx`         | Error boundaries must be Client Components |
-| `app/global-error.tsx`  | Same, for the root layout                  |
+| File                         | Why                                          |
+| ---------------------------- | -------------------------------------------- |
+| `components/Header.tsx`      | Active link via `usePathname`                |
+| `components/Reveal.tsx`      | Reveal on scroll (`IntersectionObserver`)    |
+| `hooks/useReveal.ts`         | Hook used by `Reveal`                        |
+| `components/LinkSpinner.tsx` | Pending-navigation spinner (`useLinkStatus`) |
+| `app/error.tsx`              | Error boundaries must be Client Components   |
+| `app/global-error.tsx`       | Same, for the root layout                    |
 
 The brand ticker is pure CSS and stays on the server. Pages read data through
-`lib/guitarras.ts`; no component imports `data/` directly.
+`lib/guitarras.ts`, which (like `lib/prisma.ts`) imports `server-only`: a
+Client Component that imported it would fail the build, so no database query
+can run in the browser.
+
+## Data and caching
+
+- **Source of truth:** PostgreSQL. Models `Categoria` and `Producto` in
+  `prisma/schema.prisma`; prices are integer cents (`precioCentimos`), never
+  floats or `Decimal`.
+- **Client:** one `PrismaClient` with the `pg` driver adapter
+  (`lib/prisma.ts`), kept on `globalThis` in development so HMR does not open a
+  new pool on every change.
+- **Reads:** `getGuitarras()`, `getGuitarraById()` and `getCategorias()` return
+  only active products, as plain serializable objects (`types/guitarra.ts`).
+- **Cache:** each read goes through `unstable_cache` with tags and no
+  time-based expiry. Pages are prerendered at build time and regenerate when a
+  mutation calls `revalidateTag(tag, "max")`. Tags (`cacheTags` in
+  `lib/guitarras.ts`): `productos` (lists and every detail), `producto:<id>`
+  (one detail), `categorias`. The admin CRUD (Phase 13) is the first caller.
+  `'use cache'` was not used because it requires `cacheComponents`, which
+  changes rendering app-wide.
+- **Loading states:** `app/producto/[id]/loading.tsx` covers products rendered
+  on demand. Links to the catalog wrap their text in `LinkSpinner`, which shows
+  a spinner while the navigation is pending (only visible when the prefetch has
+  not finished). The catalog has no `loading.tsx` on purpose: a Suspense boundary around a
+  database query makes the prerendered HTML ship the skeleton and swap the
+  cards in with a script, which leaves the page empty without JavaScript.
+- **URLs:** `/producto/[id]` stays (the Phase 6 smoke tests pin it). Every
+  product already has a unique `slug`, ready for a later move to
+  `/producto/[slug]` with permanent redirects.
 
 ## Conventions
 
-- **Language:** domain in Spanish (`Guitarra`, `Categoria`, `precio`, route
+- **Language:** domain in Spanish (`Guitarra`, `Categoria`, `precioCentimos`, route
   segments such as `catalogo` or `producto`), infrastructure and tooling in
   English (`getGuitarras`, `formatPrice`, `staggerStyle`, `Container`). UI copy
   is always Spanish.
 - **Components:** one component per file, default export, `PascalCase` filename.
 - **Folders:** no `src/` directory. `app/` holds routing only (pages, layouts,
   error and not-found files); shared code lives in sibling top-level folders
-  (`components/`, `lib/`, `data/`, `types/`, `hooks/`, `utils/`).
+  (`components/`, `lib/`, `prisma/`, `types/`, `hooks/`, `utils/`).
 - **Imports:** `@/*` maps to the project root (`@/components/…`, `@/lib/…`).
 - **Types:** `strict: true`; no explicit `any`, no `@ts-ignore` (both enforced by
   ESLint).
@@ -196,11 +256,10 @@ The brand ticker is pure CSS and stays on the server. Pages read data through
 - **Cards and links:** a link's accessible name must come from visible text
   (WCAG 2.5.3). Clickable cards put the link on the title and stretch it with a
   pseudo-element instead of wrapping the whole card.
-- **Prices:** always through `formatPrice` (`es-ES`, EUR) — never
-  `toLocaleString()` in components.
-- **Data access:** async functions in `lib/` (`getGuitarras`,
-  `getGuitarraById`, `getCategorias`). In Phase 8 they switch to PostgreSQL
-  without touching the pages.
+- **Prices:** integer cents everywhere; displayed only through `formatPrice`
+  (takes cents, `es-ES`, EUR) — never `toLocaleString()` in components.
+- **Data access:** async, server-only functions in `lib/` (`getGuitarras`,
+  `getGuitarraById`, `getCategorias`). Pages never import Prisma.
 
 ## Hosting
 
@@ -208,11 +267,16 @@ Vercel is the current choice and gives preview deployments per pull request.
 It is provisional, so the app avoids platform-only APIs: `pnpm build` +
 `pnpm start` runs it on any Node server.
 
+Managed PostgreSQL is **Neon**: set `DATABASE_URL` to the pooled connection
+string and `DIRECT_URL` to the direct one, then run `pnpm db:deploy` (and
+`pnpm db:seed` on a fresh database). Local development never needs Neon.
+
 ## Images
 
 Product images go through `components/ProductImage.tsx`, a thin wrapper over
-`next/image` (`fill` + `sizes`). It accepts a static import (today) or a
-remote URL (Cloudinary, Phase 13), so pages do not change when the source does.
+`next/image` (`fill` + `sizes`). The database stores a path under
+`public/guitarras/` (today) or, later, a remote URL (Cloudinary, Phase 13), so
+pages do not change when the source does.
 
 - Served as AVIF with WebP fallback (`images.formats` in `next.config.ts`).
 - `sizes` presets per layout live next to the component (`imageSizes`).

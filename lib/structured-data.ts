@@ -28,7 +28,7 @@ export function productJsonLd(guitarra: Guitarra) {
     offers: {
       "@type": "Offer",
       url,
-      price: guitarra.precio.toFixed(2),
+      price: (guitarra.precioCentimos / 100).toFixed(2),
       priceCurrency: "EUR",
       availability: "https://schema.org/InStoreOnly",
       seller: { "@type": "Organization", name: siteConfig.name },

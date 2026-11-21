@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import LinkSpinner from "@/components/LinkSpinner";
 import { notFound } from "next/navigation";
 import { getGuitarraById, getGuitarras } from "@/lib/guitarras";
 import { formatPrice } from "@/utils/formatPrice";
@@ -38,7 +39,7 @@ export async function generateMetadata({
 
   return pageMetadata({
     title: guitarra.nombre,
-    description: `${guitarra.descripcion} ${guitarra.marca}, ${formatPrice(guitarra.precio)}. Ajustada a mano en nuestro taller de Madrid.`,
+    description: `${guitarra.descripcion} ${guitarra.marca}, ${formatPrice(guitarra.precioCentimos)}. Ajustada a mano en nuestro taller de Madrid.`,
     path: `/producto/${guitarra.id}`,
   });
 }
@@ -108,7 +109,7 @@ export default async function Producto({
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
               <Link href="/catalogo" className={enlaceVolver}>
-                ← Volver al catálogo
+                <LinkSpinner>← Volver al catálogo</LinkSpinner>
               </Link>
 
               <p className="mt-10 text-sm font-medium uppercase tracking-[0.3em] text-accent">
@@ -119,7 +120,7 @@ export default async function Producto({
               </h1>
 
               <p className="mt-8 font-display text-5xl tracking-[-0.03em] text-ink sm:text-6xl">
-                {formatPrice(guitarra.precio)}
+                {formatPrice(guitarra.precioCentimos)}
               </p>
               <p className="mt-2 text-sm text-ink-soft">
                 IVA incluido · Envío asegurado en península

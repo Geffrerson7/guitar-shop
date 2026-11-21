@@ -2,6 +2,14 @@ import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
+// Carga `.env` (DATABASE_URL) para las pruebas de integración de la capa de
+// datos. En CI las variables llegan del entorno del workflow.
+try {
+  process.loadEnvFile();
+} catch {
+  // Sin .env: las pruebas que necesitan PostgreSQL se omiten.
+}
+
 /*
  * Pruebas unitarias: utilidades, capa de datos y componentes síncronos.
  * Los Server Components asíncronos (las páginas) se prueban de extremo a

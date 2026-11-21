@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LinkSpinner from "@/components/LinkSpinner";
 import Container from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/buttonStyles";
 
@@ -18,7 +19,7 @@ export default function ProductoNotFound() {
         en el catálogo.
       </p>
       <Link href="/catalogo" className={`${buttonClasses("outline")} mt-10`}>
-        ← Volver al catálogo
+        <LinkSpinner>← Volver al catálogo</LinkSpinner>
       </Link>
     </Container>
   );

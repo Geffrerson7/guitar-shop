@@ -22,6 +22,25 @@ jobs:
       # Versión de pnpm fijada aquí porque package.json no declara
       # `packageManager`. Mantener alineada con la versión local.
       PNPM_VERSION: 12.18.0
+      # Base de datos del servicio `postgres` (Fase 8): la usan las pruebas de
+      # integración de la capa de datos, el build (prerender) y las E2E.
+      DATABASE_URL: postgresql://guitarshop:guitarshop@localhost:5432/guitarshop
+
+    # Misma versión mayor que docker-compose.yml.
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: guitarshop
+          POSTGRES_PASSWORD: guitarshop
+          POSTGRES_DB: guitarshop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U guitarshop -d guitarshop"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
 
     steps:
       - uses: actions/checkout@v7
@@ -35,8 +54,15 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
+      # `postinstall` ejecuta `prisma generate`.
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
+
+      - name: Migraciones (prisma migrate deploy)
+        run: pnpm db:deploy
+
+      - name: Datos iniciales (seed)
+        run: pnpm db:seed
 
       - name: Formato (Prettier)
         run: pnpm format:check

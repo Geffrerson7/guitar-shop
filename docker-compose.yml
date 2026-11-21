@@ -1,0 +1,25 @@
+# PostgreSQL local para desarrollo (Fase 8). Producción usa Neon.
+#   docker compose up -d --wait
+# Las credenciales coinciden con .env.example; son solo para local.
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: guitarshop
+      POSTGRES_PASSWORD: guitarshop
+      POSTGRES_DB: guitarshop
+    ports:
+      - "5432:5432"
+    volumes:
+      # PostgreSQL 18+ guarda los datos en un subdirectorio por versión
+      # dentro de /var/lib/postgresql, así que se monta el directorio padre.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guitarshop -d guitarshop"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:

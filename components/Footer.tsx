@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LinkSpinner from "./LinkSpinner";
 import Container from "./ui/Container";
 
 const categorias = [
@@ -46,7 +47,7 @@ export default function Footer() {
               ))}
               <li>
                 <Link href="/catalogo" className={`${enlaceFooter} mt-2`}>
-                  Ver catálogo completo →
+                  <LinkSpinner>Ver catálogo completo →</LinkSpinner>
                 </Link>
               </li>
             </ul>

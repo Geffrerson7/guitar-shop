@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LinkSpinner from "@/components/LinkSpinner";
 import Container from "@/components/ui/Container";
 import type { Metadata } from "next";
 import { buttonClasses } from "@/components/ui/buttonStyles";
@@ -34,7 +35,7 @@ export default function NotFound() {
             Ir al inicio
           </Link>
           <Link href="/catalogo" className={buttonClasses("outline")}>
-            Ver el catálogo
+            <LinkSpinner>Ver el catálogo</LinkSpinner>
           </Link>
         </div>
       </Container>
