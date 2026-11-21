@@ -108,4 +108,79 @@ describe.skipIf(!hayBaseDeDatos)("capa de datos contra PostgreSQL", () => {
     );
     expect(nombres).not.toContain(`Vacía ${sufijo}`);
   });
+
+  describe("búsqueda del catálogo (Fase 9)", () => {
+    const filtros = { orden: "destacados", pagina: 1 } as const;
+
+    it("busca sin distinguir mayúsculas ni acentos", async () => {
+      const { guitarras } = await datos.buscarGuitarras({
+        ...filtros,
+        q: "GÍBSON",
+      });
+      expect(guitarras.map((g) => g.marca).sort()).toEqual([
+        "Gibson",
+        "Gibson Vintage",
+      ]);
+    });
+
+    it("exige todas las palabras, en nombre o marca", async () => {
+      const { guitarras } = await datos.buscarGuitarras({
+        ...filtros,
+        q: "gibson 335",
+      });
+      expect(guitarras.map((g) => g.nombre)).toEqual(["1964 Gibson ES-335"]);
+    });
+
+    it("trata los comodines como texto literal", async () => {
+      const { total } = await datos.buscarGuitarras({ ...filtros, q: "%" });
+      expect(total).toBe(0);
+    });
+
+    it("no encuentra productos inactivos", async () => {
+      const { total } = await datos.buscarGuitarras({
+        ...filtros,
+        q: "retirada",
+      });
+      expect(total).toBe(0);
+    });
+
+    it("combina categoría y rango de precio", async () => {
+      const { guitarras } = await datos.buscarGuitarras({
+        ...filtros,
+        categoria: "acusticas",
+        precioMin: 3500,
+      });
+      expect(guitarras.map((g) => g.nombre).sort()).toEqual([
+        "Classical Concert 1A",
+        "Grand Auditorium C12",
+      ]);
+    });
+
+    it("pagina de 8 en 8 sin repetir ni perder piezas", async () => {
+      const p1 = await datos.buscarGuitarras({ ...filtros, pagina: 1 });
+      const p2 = await datos.buscarGuitarras({ ...filtros, pagina: 2 });
+
+      expect([p1.guitarras.length, p2.guitarras.length]).toEqual([8, 4]);
+      expect([p1.total, p1.totalPaginas]).toEqual([12, 2]);
+      const ids = [...p1.guitarras, ...p2.guitarras].map((g) => g.id);
+      expect(new Set(ids).size).toBe(12);
+    });
+
+    it("ordena por precio", async () => {
+      const { guitarras } = await datos.buscarGuitarras({
+        ...filtros,
+        orden: "precio-asc",
+      });
+      const precios = guitarras.map((g) => g.precioCentimos);
+      expect(precios).toEqual([...precios].sort((a, b) => a - b));
+      expect(precios[0]).toBe(45_000);
+    });
+
+    it("lista las marcas publicadas, sin la de productos inactivos", async () => {
+      const marcas = await datos.getMarcas();
+      expect(marcas).toContain("Gibson");
+      expect(marcas).not.toContain("Pruebas");
+      expect(marcas).toEqual([...marcas].sort((a, b) => a.localeCompare(b)));
+    });
+  });
 });

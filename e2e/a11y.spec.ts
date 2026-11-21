@@ -2,13 +2,17 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 /*
- * Auditoría automática con axe sobre las 6 rutas públicas (deuda declarada
+ * Auditoría automática con axe sobre las rutas públicas (deuda declarada
  * en el cierre de la Fase 2). Falla ante cualquier violación grave o crítica
  * de WCAG 2.2 A/AA; las moderadas y menores se adjuntan al informe.
  */
 const rutas = [
   "/",
   "/catalogo",
+  // Fase 9: catálogo filtrado, paginado y sin resultados.
+  "/catalogo?categoria=acusticas&orden=precio-desc",
+  "/catalogo?pagina=2",
+  "/catalogo?q=zzz",
   "/producto/3",
   "/acerca",
   "/contacto",
