@@ -1,13 +1,15 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("catálogo", () => {
+  // Fase 9: 8 piezas por página; el contador anuncia las 12.
   test("muestra las 12 piezas enlazadas a su detalle", async ({ page }) => {
     await page.goto("/catalogo");
 
     await expect(
       page.getByRole("heading", { level: 1, name: "Instrumentos de boutique" }),
     ).toBeVisible();
-    await expect(page.locator('main a[href^="/producto/"]')).toHaveCount(12);
+    await expect(page.getByText("12 piezas disponibles")).toBeVisible();
+    await expect(page.locator('main a[href^="/producto/"]')).toHaveCount(8);
   });
 
   test("una tarjeta lleva al detalle de su producto", async ({ page }) => {
@@ -77,7 +79,7 @@ test.describe("sin JavaScript", () => {
     page,
   }) => {
     await page.goto("/catalogo");
-    await expect(page.locator('main a[href^="/producto/"]')).toHaveCount(12);
+    await expect(page.locator('main a[href^="/producto/"]')).toHaveCount(8);
 
     await page.goto("/acerca");
     await expect(

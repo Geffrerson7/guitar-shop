@@ -33,5 +33,5 @@ test("los enlaces al catálogo muestran un spinner mientras la navegación está
   ]);
 
   await expect(page).toHaveURL("/catalogo", { timeout: 10_000 });
-  await expect(page.locator('main a[href^="/producto/"]')).toHaveCount(12);
+  await expect(page.locator('main a[href^="/producto/"]')).toHaveCount(8);
 });
