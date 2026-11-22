@@ -17,6 +17,7 @@ export type ImagenProducto = StaticImageData | string;
  * Producto tal como lo consume la interfaz. Es una proyección del modelo
  * `Producto` de Prisma: solo datos serializables, sin fechas ni campos
  * internos (`stock`, `activo`), para que pueda cruzar a componentes de cliente.
+ * El detalle usa `GuitarraDetalle`, que añade el stock.
  */
 export interface Guitarra {
   id: number;
@@ -31,4 +32,9 @@ export interface Guitarra {
   imagen: ImagenProducto;
   descripcion: string;
   specs: string[];
+}
+
+/** Producto del detalle: añade las unidades disponibles (Fase 10). */
+export interface GuitarraDetalle extends Guitarra {
+  stock: number;
 }
