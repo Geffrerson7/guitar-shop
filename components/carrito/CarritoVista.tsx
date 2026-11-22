@@ -1,75 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import ProductImage, { imageSizes } from "@/components/ProductImage";
 import { buttonClasses } from "@/components/ui/buttonStyles";
 import {
   calcularCarrito,
   type LineaResuelta,
-  type ProductoCarrito,
 } from "@/features/carrito/calculo";
 import { textoUnidades, useCarrito } from "@/features/carrito/CarritoProvider";
 import { MAX_POR_LINEA } from "@/features/carrito/reducer";
+import { useProductosCarrito } from "@/features/carrito/useProductosCarrito";
 import { formatPrice } from "@/utils/formatPrice";
 
 /*
  * Contenido de /carrito (Fase 10).
  *
  * El navegador solo aporta ids y cantidades. Los datos de cada producto se
- * piden a `GET /api/carrito` una vez por producto y visita: cambiar una
- * cantidad o quitar una línea no vuelve a la red; un producto nuevo (añadido
- * desde otra pestaña, por ejemplo) sí. Los importes se calculan con los
- * precios de esa respuesta, nunca con nada guardado en el navegador.
+ * piden a `GET /api/carrito` (useProductosCarrito) una vez por producto y
+ * visita. Los importes se calculan con los precios de esa respuesta, nunca
+ * con nada guardado en el navegador. El checkout (Fase 11) solo se abre si
+ * todas las líneas se pueden comprar tal como están.
  */
-
-type Conocidos = ReadonlyMap<number, ProductoCarrito | null>;
-
-/** Productos del carrito resueltos en el servidor, pidiendo solo los que faltan. */
-function useProductosCarrito(ids: readonly number[], activo: boolean) {
-  const [conocidos, setConocidos] = useState<Conocidos>(() => new Map());
-  const [fallo, setFallo] = useState<string | null>(null);
-  const [intento, setIntento] = useState(0);
-
-  const pendientes = ids.filter((id) => !conocidos.has(id)).join(",");
-
-  useEffect(() => {
-    if (!activo || pendientes === "") return;
-    const controlador = new AbortController();
-
-    fetch(`/api/carrito?ids=${pendientes}`, {
-      signal: controlador.signal,
-      cache: "no-store",
-    })
-      .then(async (respuesta) => {
-        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
-        return (await respuesta.json()) as { productos: ProductoCarrito[] };
-      })
-      .then(({ productos }) => {
-        setConocidos((previos) => {
-          const siguientes = new Map(previos);
-          // Lo pedido que no vuelve no está a la venta.
-          for (const id of pendientes.split(",")) siguientes.set(+id, null);
-          for (const producto of productos) {
-            siguientes.set(producto.id, producto);
-          }
-          return siguientes;
-        });
-        setFallo(null);
-      })
-      .catch(() => {
-        if (!controlador.signal.aborted) setFallo(pendientes);
-      });
-
-    return () => controlador.abort();
-  }, [pendientes, activo, intento]);
-
-  return {
-    conocidos,
-    error: fallo !== null && fallo === pendientes,
-    reintentar: () => setIntento((n) => n + 1),
-  };
-}
 
 const enlaceProducto =
   "rounded-sm transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent";
@@ -288,6 +240,12 @@ export default function CarritoVista() {
   }
 
   const comprables = carrito.unidades > 0;
+  // El pedido se crea con lo que hay en el carrito: todas las líneas tienen
+  // que poder servirse tal cual (el servidor lo vuelve a comprobar).
+  const listo =
+    !carrito.cargando &&
+    !error &&
+    carrito.lineas.every((linea) => linea.estado === "disponible");
 
   return (
     <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-14">
@@ -373,24 +331,35 @@ export default function CarritoVista() {
           </dl>
           <p className="mt-2 text-sm text-ink-soft">IVA incluido.</p>
 
-          {/* El checkout llega en la Fase 11: el botón existe, pero aún no
-              lleva a ninguna parte. */}
-          <button
-            type="button"
-            disabled
-            aria-describedby="carrito-checkout-nota"
-            className={buttonClasses("solid", "mt-8 w-full")}
-          >
-            Finalizar compra
-          </button>
-          <p
-            id="carrito-checkout-nota"
-            className="mt-3 text-sm leading-relaxed text-ink-soft"
-          >
-            {comprables
-              ? "El pago online llega muy pronto. Mientras tanto, escríbenos y cerramos la compra contigo."
-              : "Ninguna pieza del carrito está disponible ahora mismo."}
-          </p>
+          {listo ? (
+            <Link
+              href="/checkout"
+              className={buttonClasses("solid", "mt-8 w-full")}
+            >
+              Finalizar compra
+            </Link>
+          ) : (
+            <>
+              <button
+                type="button"
+                disabled
+                aria-describedby="carrito-checkout-nota"
+                className={buttonClasses("solid", "mt-8 w-full")}
+              >
+                Finalizar compra
+              </button>
+              <p
+                id="carrito-checkout-nota"
+                className="mt-3 text-sm leading-relaxed text-ink-soft"
+              >
+                {carrito.cargando
+                  ? "Comprobando la disponibilidad…"
+                  : comprables
+                    ? "Ajusta o elimina las piezas señaladas para continuar."
+                    : "Ninguna pieza del carrito está disponible ahora mismo."}
+              </p>
+            </>
+          )}
           <Link
             href="/catalogo"
             className={`${buttonClasses("quiet")} mt-4 w-full`}

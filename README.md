@@ -1,8 +1,9 @@
 # GUITAR-SHOP
 
 A boutique guitar storefront built with Next.js (App Router) and TypeScript.
-It has a catalog of instruments, a product detail view and the usual static
-pages (home, about, contact, 404). The storefront brand is **Voltio & Madera**.
+It has a catalog with search and filters, a product detail view, a persistent
+guest cart, a simulated checkout that records orders, and the usual static
+pages (home, about, contact, privacy, 404). The storefront brand is **Voltio & Madera**.
 
 The project is evolving into a portfolio e-commerce platform (database, cart,
 simulated checkout, admin panel). The roadmap lives in
@@ -83,18 +84,29 @@ Prisma CLI reads `.env` too.
 
 ## Testing
 
-| Layer         | Tool                                        | What it covers                                                                                                                              | Where                              |
-| ------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| Unit          | Vitest + Testing Library (jsdom)            | Utilities, env validation, data layer (Prisma mocked), site URL, SEO, JSON-LD, client components                                            | `**/*.test.ts(x)` next to the code |
-| Integration   | Vitest against PostgreSQL                   | Data layer on the seeded database: products, unknown id, inactive product, categories, catalog search (accents, filters, pagination, order) | `lib/guitarras.db.test.ts`         |
-| End to end    | Playwright (desktop and mobile Chrome)      | Catalog, product 200/404, unknown route 404, no-JS rendering, reduced motion, `robots.txt` and `sitemap.xml`                                | `e2e/smoke.spec.ts`                |
-| End to end    | Playwright                                  | Catalog search, filters, order, pagination, Back button, shareable URLs, invalid params, no-JS form, footer links                           | `e2e/catalogo.spec.ts`             |
-| End to end    | Playwright                                  | Cart: add from the detail, change, remove, stock limit, reload, reopen the browser, second tab, tampered `localStorage`, `/api/carrito`     | `e2e/carrito.spec.ts`              |
-| Accessibility | axe (`@axe-core/playwright`), WCAG 2.2 A/AA | The public routes plus filtered, paginated and empty catalog states; fails on any serious or critical violation                             | `e2e/a11y.spec.ts`                 |
+| Layer         | Tool                                        | What it covers                                                                                                                                        | Where                              |
+| ------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Unit          | Vitest + Testing Library (jsdom)            | Utilities, env validation, data layer (Prisma mocked), site URL, SEO, JSON-LD, client components                                                      | `**/*.test.ts(x)` next to the code |
+| Integration   | Vitest against PostgreSQL                   | Data layer on the seeded database: products, unknown id, inactive product, categories, catalog search (accents, filters, pagination, order)           | `lib/guitarras.db.test.ts`         |
+| Integration   | Vitest against PostgreSQL                   | Order transaction: copied prices, stock decrement, insufficient stock and inactive products roll back, last unit raced by two orders, idempotency key | `lib/pedidos.db.test.ts`           |
+| End to end    | Playwright (desktop and mobile Chrome)      | Catalog, product 200/404, unknown route 404, no-JS rendering, reduced motion, `robots.txt` and `sitemap.xml`                                          | `e2e/smoke.spec.ts`                |
+| End to end    | Playwright                                  | Catalog search, filters, order, pagination, Back button, shareable URLs, invalid params, no-JS form, footer links                                     | `e2e/catalogo.spec.ts`             |
+| End to end    | Playwright                                  | Cart: add from the detail, change, remove, stock limit, reload, reopen the browser, second tab, tampered `localStorage`, `/api/carrito`               | `e2e/carrito.spec.ts`              |
+| End to end    | Playwright                                  | Checkout: catalog → cart → checkout → confirmation by keyboard, field errors and focus, tampered price and stock, double submit, noindex, 404         | `e2e/checkout.spec.ts`             |
+| Accessibility | axe (`@axe-core/playwright`), WCAG 2.2 A/AA | The public routes plus filtered, paginated and empty catalog states; fails on any serious or critical violation                                       | `e2e/a11y.spec.ts`                 |
 
 The integration tests need `DATABASE_URL` (from `.env` or the environment) and
 a seeded database; they are skipped when it is not set. Their auxiliary rows
-use a unique suffix and are deleted afterwards.
+use a unique suffix and are deleted afterwards. They live in their own Vitest
+project (`db`) that runs one file at a time: the order tests create active
+products for a moment, which the catalog tests would otherwise count.
+
+The checkout E2E tests read and clean the database through `pg` (`e2e/db.ts`):
+each test uses its own email, and afterwards the stock of its orders is given
+back and the orders are deleted. Each Playwright project buys a different
+product that no other test uses (desktop: id 10, mobile: id 9), and the tests
+in that file run in order, so stock assertions are exact. Each test also sends
+its own `x-forwarded-for` so the checkout rate limit does not trip.
 
 Async Server Components (the pages) are covered end to end, because Vitest
 cannot render them. Playwright runs against `next start`, not the dev server:
@@ -138,6 +150,9 @@ workflow pins pnpm `12.18.0` because `package.json` does not declare
 │   ├── producto/[id]/       # /producto/:id (+ its own not-found.tsx)
 │   ├── carrito/             # /carrito (noindex)
 │   ├── api/carrito/         # GET /api/carrito?ids= — live product data for the cart
+│   ├── checkout/            # /checkout (noindex) + actions.ts (Server Action)
+│   ├── pedido/[codigo]/     # /pedido/:codigo — order confirmation (noindex, dynamic)
+│   ├── privacidad/          # /privacidad — privacy notice
 │   ├── contacto/            # /contacto
 │   ├── acerca/              # /acerca
 │   ├── not-found.tsx        # 404
@@ -153,13 +168,15 @@ workflow pins pnpm `12.18.0` because `package.json` does not declare
 │   └── og/                  # Share image for Open Graph and Twitter (1200×630)
 ├── components/              # Shared components
 │   ├── carrito/             # Add-to-cart button, cart page view
+│   ├── checkout/            # Checkout form and order summary
 │   └── ui/                  # Container, Button, PageTitle and shared styles
 ├── features/carrito/        # Cart: reducer, localStorage format, store, provider, totals
+├── features/checkout/       # Form ↔ Server Action contract (fields, result states)
 ├── generated/prisma/        # Prisma Client (git-ignored, `prisma generate`)
 ├── hooks/                   # Client hooks (useReveal)
-├── lib/                     # Data access (getGuitarras…), Prisma client, fonts, site URL, SEO
+├── lib/                     # Data access (getGuitarras…, pedidos), Prisma client, validators, fonts, site URL, SEO
 ├── prisma/
-│   ├── schema.prisma        # Categoria and Producto models
+│   ├── schema.prisma        # Categoria, Producto, Pedido and PedidoItem models
 │   ├── migrations/          # Versioned SQL migrations
 │   └── seed.ts              # Idempotent catalog seed
 ├── public/guitarras/        # Product images (WebP, 512×512); the DB stores the path
@@ -183,16 +200,19 @@ workflow pins pnpm `12.18.0` because `package.json` does not declare
 
 ## Routes
 
-| Path             | Rendering                             | Notes                                                                                     |
-| ---------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `/`              | Static (regenerated by tag)           |                                                                                           |
-| `/catalogo`      | Dynamic (`searchParams`), cached data | Search, filters, order and pagination in the URL; invalid params are ignored, never a 500 |     |
-| `/producto/[id]` | SSG (`generateStaticParams`)          | Unknown, invalid or inactive id → real HTTP 404; new ids render on demand                 |
-| `/carrito`       | Static shell, client content          | Content comes from `localStorage` + `GET /api/carrito`; `noindex`                         |
-| `/api/carrito`   | Dynamic Route Handler, `no-store`     | `?ids=1,3` → current name, price, image and stock of active products; invalid ids → 400   |
-| `/acerca`        | Static                                |                                                                                           |
-| `/contacto`      | Static                                |                                                                                           |
-| anything else    | `not-found.tsx`                       | HTTP 404                                                                                  |
+| Path               | Rendering                             | Notes                                                                                     |
+| ------------------ | ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `/`                | Static (regenerated by tag)           |                                                                                           |
+| `/catalogo`        | Dynamic (`searchParams`), cached data | Search, filters, order and pagination in the URL; invalid params are ignored, never a 500 |     |
+| `/producto/[id]`   | SSG (`generateStaticParams`)          | Unknown, invalid or inactive id → real HTTP 404; new ids render on demand                 |
+| `/carrito`         | Static shell, client content          | Content comes from `localStorage` + `GET /api/carrito`; `noindex`                         |
+| `/api/carrito`     | Dynamic Route Handler, `no-store`     | `?ids=1,3` → current name, price, image and stock of active products; invalid ids → 400   |
+| `/checkout`        | Static shell, client form             | Posts to the `confirmarPedido` Server Action; `noindex`                                   |
+| `/pedido/[codigo]` | Dynamic (`connection()`)              | Order confirmation; unknown or malformed code → 404; `noindex`, `no-referrer`             |
+| `/privacidad`      | Static                                | Privacy notice linked from the checkout consent                                           |
+| `/acerca`          | Static                                |                                                                                           |
+| `/contacto`        | Static                                |                                                                                           |
+| anything else      | `not-found.tsx`                       | HTTP 404                                                                                  |
 
 Routes are resolved on the server, so deep links and reloads work without any
 hosting rewrite.
@@ -208,6 +228,8 @@ browser APIs. Only these files declare `"use client"`:
 | `features/carrito/CarritoProvider.tsx`       | Cart state (`useSyncExternalStore`) and live region    |
 | `components/carrito/AnadirAlCarrito.tsx`     | Add-to-cart button with stock limit                    |
 | `components/carrito/CarritoVista.tsx`        | Cart lines, quantities and totals                      |
+| `features/carrito/useProductosCarrito.ts`    | Fetches live product data for cart and checkout        |
+| `components/checkout/FormularioCheckout.tsx` | Checkout form (`useActionState`), summary, focus       |
 | `components/Reveal.tsx`                      | Reveal on scroll (`IntersectionObserver`)              |
 | `hooks/useReveal.ts`                         | Hook used by `Reveal`                                  |
 | `components/LinkSpinner.tsx`                 | Pending-navigation spinner (`useLinkStatus`)           |
@@ -274,8 +296,28 @@ can run in the browser.
   products and lines above the current stock are flagged and left out of the
   total without blocking the rest. One `role="status"` region in the provider
   announces every change. The product detail reads `stock` with the cached
-  detail; the cart re-checks it live, and checkout (Phase 11) must check it
-  again and revalidate `producto:<id>`.
+  detail; the cart re-checks it live, and checkout checks it again inside the
+  order transaction.
+- **Checkout and orders (Phase 11):** `/checkout` posts the cart (ids and
+  quantities only) and the contact data to the `confirmarPedido` Server Action
+  (`app/checkout/actions.ts`). Zod validates everything again on the server
+  (`lib/validaciones/checkout.ts`; the browser only gets `autocomplete`, input
+  types and `required`). `crearPedido` (`lib/pedidos.ts`) runs one transaction:
+  `SELECT … FOR UPDATE` of the products in id order, a pure check of stock and
+  `activo` plus the total from database prices (`lib/pedidos-calculo.ts`), the
+  stock decrement and the order with its lines (name, brand and unit price are
+  **copied**). Any failing line rolls everything back and is reported to the
+  user. A CHECK constraint keeps `stock >= 0`. Double submits are stopped twice:
+  the form ignores submissions while one is pending, and every attempt carries
+  an idempotency key (UUID, unique in `Pedido`) so a repeat returns the same
+  order. The action is rate limited per IP (5 valid submissions per 10 minutes,
+  in memory). After a new order it calls `updateTag("producto:<id>")` so the
+  detail shows the new stock right away. The public order code is 80 random
+  bits (`VM-XXXX-XXXX-XXXX-XXXX`, Crockford alphabet), not sequential. With the
+  simulated payment, orders are created `confirmado`; states are `pendiente`,
+  `confirmado`, `enviado` and `cancelado` (managed from the panel in Phase
+  13). Only name, email, optional phone and shipping address are collected,
+  with explicit consent; nothing is sent to third parties.
 - **URLs:** `/producto/[id]` stays (the Phase 6 smoke tests pin it). Every
   product already has a unique `slug`, ready for a later move to
   `/producto/[slug]` with permanent redirects.
@@ -343,10 +385,10 @@ pages do not change when the source does.
 - **Crawling:** `app/robots.ts` and `app/sitemap.ts`. The sitemap reads from
   `getGuitarras()`, so it follows the catalog when it moves to the database.
   `/admin`, `/carrito`, `/checkout`, `/pedido` and `/api/` are disallowed;
-  `/carrito` also sends `noindex`. 404 responses get `noindex` from Next.js.
+  `/carrito`, `/checkout` and `/pedido/[codigo]` also send `noindex`. 404 responses get `noindex` from Next.js.
 - **Structured data:** schema.org `Product` JSON-LD on each product page
-  (`lib/structured-data.ts`), with `availability: InStoreOnly` until there is
-  online checkout. `<` is escaped so content cannot close the script tag.
+  (`lib/structured-data.ts`), with `availability` `InStock` or `OutOfStock`
+  from the detail's stock (`InStoreOnly` when the stock is unknown). `<` is escaped so content cannot close the script tag.
 - **Icons:** `app/icon.svg` and `app/apple-icon.png` (file conventions).
 
 ## Design system
@@ -372,8 +414,11 @@ See [`docs/AUDITORIA_TECNICA.md`](docs/AUDITORIA_TECNICA.md). Next up:
 - Product photos are 512×512 sources: enough for cards, too small for
   full-bleed images on desktop (they bleed only on mobile and tablet).
 - Product pages share the site-wide preview image instead of one per product.
-- The cart's "Finalizar compra" button stays disabled until checkout exists
-  (Phase 11).
+- The checkout rate limit lives in memory, per server instance: exact on one
+  Node process, per-instance on serverless. A shared limit (database or Redis)
+  is for Phase 14.
+- Neon's region (AWS Europe, Frankfurt) is named in the privacy notice; the
+  project has to be created there (Phase 14).
 - Branch protection (require green CI before merging) is a repository
   setting, not code; it has to be enabled on GitHub.
 

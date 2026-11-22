@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getGuitarras } from "@/lib/guitarras";
 import { absoluteUrl } from "@/lib/site";
 
-const paginas = ["/", "/catalogo", "/acerca", "/contacto"];
+const paginas = ["/", "/catalogo", "/acerca", "/contacto", "/privacidad"];
 
 /**
  * Se genera desde la capa de datos: cuando el catálogo pase a PostgreSQL

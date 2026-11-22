@@ -110,5 +110,5 @@ test("robots.txt y sitemap.xml están publicados", async ({ request }) => {
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBe(true);
-  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(16);
+  expect((await sitemap.text()).match(/<loc>/g)).toHaveLength(17);
 });

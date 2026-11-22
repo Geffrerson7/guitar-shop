@@ -107,7 +107,12 @@ export default function Footer() {
         </p>
 
         <div className="mt-6 flex flex-col gap-2 border-t border-paper/10 pt-6 text-sm text-paper/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 Voltio &amp; Madera. Todos los derechos reservados.</p>
+          <p>
+            © 2026 Voltio &amp; Madera. Todos los derechos reservados.{" "}
+            <Link href="/privacidad" className={enlaceFooter}>
+              Privacidad
+            </Link>
+          </p>
           <p>Hecho a mano en Madrid, España.</p>
         </div>
       </Container>

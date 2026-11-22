@@ -19,8 +19,8 @@ model Categoria {
 }
 
 model Producto {
-  id             Int       @id @default(autoincrement())
-  slug           String    @unique
+  id             Int          @id @default(autoincrement())
+  slug           String       @unique
   nombre         String
   marca          String
   descripcion    String
@@ -32,12 +32,15 @@ model Producto {
   specs          String[]
   /// Etiqueta editorial opcional ("Nuevo", "Vintage"…).
   badge          String?
-  stock          Int       @default(0)
-  activo         Boolean   @default(true)
+  stock          Int          @default(0)
+  activo         Boolean      @default(true)
   categoriaId    Int
-  categoria      Categoria @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
-  creadoEn       DateTime  @default(now())
-  actualizadoEn  DateTime  @updatedAt
+  categoria      Categoria    @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  creadoEn       DateTime     @default(now())
+  actualizadoEn  DateTime     @updatedAt
+  /// Líneas de pedido que lo referencian (Fase 11). Por eso el CRUD de la
+  /// Fase 13 desactiva en lugar de borrar.
+  lineasPedido   PedidoItem[]
 
   @@index([categoriaId])
   @@index([activo])
@@ -46,4 +49,61 @@ model Producto {
   @@index([precioCentimos])
   @@index([nombre])
   @@index([creadoEn])
+}
+
+/// Estados de un pedido (Fase 11). La gestión llega con el panel (Fase 13).
+/// Con el pago simulado, un pedido nace `confirmado`; `pendiente` queda para
+/// un pago que se confirma después (Fase 11B).
+enum EstadoPedido {
+  pendiente
+  confirmado
+  enviado
+  cancelado
+}
+
+/// Pedido de un cliente invitado (Fase 11). Solo los datos imprescindibles
+/// para el envío: nada de documentos de identidad ni datos de pago.
+model Pedido {
+  id                Int          @id @default(autoincrement())
+  /// Código público, aleatorio y no secuencial: es lo único que identifica el
+  /// pedido fuera de la base de datos (`/pedido/[codigo]`).
+  codigo            String       @unique
+  /// Clave que genera el formulario: un reenvío con la misma clave devuelve
+  /// el pedido ya creado en lugar de crear otro.
+  claveIdempotencia String       @unique @db.Uuid
+  estado            EstadoPedido @default(pendiente)
+  nombre            String
+  email             String
+  telefono          String?
+  direccion         String
+  codigoPostal      String
+  localidad         String
+  provincia         String
+  /// Suma de las líneas, calculada en el servidor.
+  totalCentimos     Int
+  /// Momento en que se aceptó el aviso de privacidad.
+  consentimientoEn  DateTime
+  creadoEn          DateTime     @default(now())
+  actualizadoEn     DateTime     @updatedAt
+  lineas            PedidoItem[]
+
+  @@index([estado])
+  @@index([creadoEn])
+}
+
+/// Línea de pedido. Nombre, marca y precio se **copian** al comprar: el
+/// pedido no cambia si después cambia el producto.
+model PedidoItem {
+  id                     Int      @id @default(autoincrement())
+  pedidoId               Int
+  pedido                 Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  productoId             Int
+  producto               Producto @relation(fields: [productoId], references: [id], onDelete: Restrict)
+  nombre                 String
+  marca                  String
+  precioUnitarioCentimos Int
+  cantidad               Int
+
+  @@unique([pedidoId, productoId])
+  @@index([productoId])
 }

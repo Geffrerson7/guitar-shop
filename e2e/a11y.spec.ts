@@ -16,6 +16,10 @@ const rutas = [
   "/producto/3",
   // Fase 10: carrito vacío (el lleno se audita en carrito.spec.ts).
   "/carrito",
+  // Fase 11: checkout vacío y aviso de privacidad (el checkout lleno, con
+  // errores y la confirmación se auditan en checkout.spec.ts).
+  "/checkout",
+  "/privacidad",
   "/acerca",
   "/contacto",
   "/no-existe",
