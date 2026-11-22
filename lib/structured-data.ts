@@ -8,10 +8,18 @@ export function imagenUrl(imagen: ImagenProducto): string {
 
 /**
  * Datos estructurados schema.org `Product` para el detalle.
- * La disponibilidad sigue siendo `InStoreOnly`: desde la Fase 10 hay carrito,
- * pero la compra online no se puede completar hasta el checkout (Fase 11).
+ * Desde la Fase 11 la compra se completa online: con el stock conocido, la
+ * disponibilidad es `InStock` u `OutOfStock`. Sin stock (un listado que no lo
+ * carga), se mantiene `InStoreOnly`.
  */
-export function productJsonLd(guitarra: Guitarra) {
+export function productJsonLd(guitarra: Guitarra & { stock?: number }) {
+  const availability =
+    guitarra.stock === undefined
+      ? "https://schema.org/InStoreOnly"
+      : guitarra.stock > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
+
   const url = absoluteUrl(`/producto/${guitarra.id}`);
 
   return {
@@ -30,7 +38,7 @@ export function productJsonLd(guitarra: Guitarra) {
       url,
       price: (guitarra.precioCentimos / 100).toFixed(2),
       priceCurrency: "EUR",
-      availability: "https://schema.org/InStoreOnly",
+      availability,
       seller: { "@type": "Organization", name: siteConfig.name },
     },
   };
