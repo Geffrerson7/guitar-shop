@@ -427,6 +427,9 @@ test.describe("accesibilidad", () => {
     await botonConfirmar(page).click();
     await expect(page).toHaveURL(/\/pedido\/VM-/);
     await expect(page.getByTestId("total-pedido")).toBeVisible();
+    // La confirmación es dinámica: Next.js envía los metadatos (el <title>)
+    // después del contenido. axe no debe auditar ese instante intermedio.
+    await expect(page).toHaveTitle("Pedido confirmado — Voltio & Madera");
     await sinViolacionesGraves(page);
   });
 });
