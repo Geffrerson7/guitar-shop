@@ -15,6 +15,8 @@ try {
  * Los Server Components asíncronos (las páginas) se prueban de extremo a
  * extremo con Playwright (e2e/), porque Vitest no los soporta.
  */
+const ignorados = ["node_modules/**", ".next/**", "e2e/**"];
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -28,10 +30,28 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    include: ["**/*.test.{ts,tsx}"],
-    exclude: ["node_modules/**", ".next/**", "e2e/**"],
     setupFiles: ["./vitest.setup.ts"],
     restoreMocks: true,
     unstubEnvs: true,
+    // Las pruebas contra PostgreSQL (`*.db.test.ts`) comparten la base de
+    // datos y crean filas temporales (productos activos, pedidos): un archivo
+    // contaría las del otro. Van en su propio proyecto, de una en una.
+    projects: [
+      {
+        test: {
+          name: "unit",
+          include: ["**/*.test.{ts,tsx}"],
+          exclude: [...ignorados, "**/*.db.test.ts"],
+        },
+      },
+      {
+        test: {
+          name: "db",
+          include: ["**/*.db.test.ts"],
+          exclude: ignorados,
+          fileParallelism: false,
+        },
+      },
+    ],
   },
 });

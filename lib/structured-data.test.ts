@@ -30,12 +30,21 @@ describe("productJsonLd", () => {
     expect(data.image[0]).toMatch(/^https?:\/\/.+om-series-artisan\.webp$/);
   });
 
-  it("publica el precio en euros y sin venta online", () => {
+  it("publica el precio en euros; sin stock conocido, solo en tienda", () => {
     expect(productJsonLd(guitarra).offers).toMatchObject({
       price: "3100.00",
       priceCurrency: "EUR",
       availability: "https://schema.org/InStoreOnly",
     });
+  });
+
+  it("con el stock del detalle, disponible u agotado online (Fase 11)", () => {
+    expect(productJsonLd({ ...guitarra, stock: 2 }).offers.availability).toBe(
+      "https://schema.org/InStock",
+    );
+    expect(productJsonLd({ ...guitarra, stock: 0 }).offers.availability).toBe(
+      "https://schema.org/OutOfStock",
+    );
   });
 
   it("acepta una imagen como import estático", () => {
