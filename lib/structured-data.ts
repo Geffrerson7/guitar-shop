@@ -8,8 +8,8 @@ export function imagenUrl(imagen: ImagenProducto): string {
 
 /**
  * Datos estructurados schema.org `Product` para el detalle.
- * La disponibilidad es `InStoreOnly`: todavía no hay venta online (llega con
- * el carrito y el checkout de las fases 10 y 11).
+ * La disponibilidad sigue siendo `InStoreOnly`: desde la Fase 10 hay carrito,
+ * pero la compra online no se puede completar hasta el checkout (Fase 11).
  */
 export function productJsonLd(guitarra: Guitarra) {
   const url = absoluteUrl(`/producto/${guitarra.id}`);

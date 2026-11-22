@@ -7,6 +7,7 @@ import { formatPrice } from "@/utils/formatPrice";
 import Container from "@/components/ui/Container";
 import { buttonClasses } from "@/components/ui/buttonStyles";
 import ProductImage, { imageSizes } from "@/components/ProductImage";
+import AnadirAlCarrito from "@/components/carrito/AnadirAlCarrito";
 import { pageMetadata } from "@/lib/seo";
 import { productJsonLd, serializeJsonLd } from "@/lib/structured-data";
 
@@ -14,6 +15,12 @@ const enlaceVolver =
   "inline-flex items-center gap-2 rounded-sm text-sm font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:text-accent";
 
 /** Ids que no son enteros positivos no llegan a la capa de datos. */
+function textoStock(stock: number): string {
+  if (stock <= 0) return "Agotada por ahora";
+  if (stock === 1) return "Última unidad disponible";
+  return `${stock} unidades disponibles`;
+}
+
 function parseId(raw: string): number | null {
   return /^[1-9]\d*$/.test(raw) ? Number(raw) : null;
 }
@@ -152,14 +159,14 @@ export default async function Producto({
               )}
 
               <div className="mt-10 flex flex-col gap-4">
-                <button
-                  type="button"
-                  disabled
-                  title="La venta online llegará en una próxima fase"
-                  className={buttonClasses("solid", "w-full")}
-                >
-                  Añadir al carrito — Próximamente
-                </button>
+                <p className="text-sm font-medium uppercase tracking-[0.16em] text-ink-soft">
+                  {textoStock(guitarra.stock)}
+                </p>
+                <AnadirAlCarrito
+                  productoId={guitarra.id}
+                  nombre={guitarra.nombre}
+                  stock={guitarra.stock}
+                />
                 <a
                   href={consulta}
                   className={buttonClasses("outline", "w-full")}
@@ -167,8 +174,8 @@ export default async function Producto({
                   Consultar disponibilidad
                 </a>
                 <p className="text-sm leading-relaxed text-ink-soft">
-                  Todavía no vendemos online. Escríbenos y preparamos la
-                  reserva, la prueba en taller o el envío.
+                  ¿Prefieres probarla antes? Escríbenos y preparamos la reserva,
+                  la prueba en taller o el envío.
                 </p>
               </div>
             </div>

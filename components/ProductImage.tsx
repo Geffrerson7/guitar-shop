@@ -21,6 +21,8 @@ export const imageSizes = {
   /** Detalle de producto: a sangre en móvil y tableta, 7 columnas (gap 56 px) en escritorio. */
   detail:
     "(min-width: 1408px) 742px, (min-width: 1024px) calc(58.33vw - 79px), 100vw",
+  /** Miniatura de una línea del carrito (ancho fijo). */
+  cartLine: "(min-width: 640px) 128px, 96px",
   /** Imagen al ancho completo del contenedor. */
   container:
     "(min-width: 1408px) 1312px, (min-width: 1024px) calc(100vw - 96px), (min-width: 640px) calc(100vw - 64px), calc(100vw - 40px)",

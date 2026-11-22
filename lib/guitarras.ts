@@ -10,7 +10,7 @@ import {
 } from "@/lib/catalogo-consulta";
 import { prisma } from "@/lib/prisma";
 import { TAMANO_PAGINA, type FiltrosCatalogo } from "@/lib/catalogo-url";
-import type { Categoria, Guitarra } from "@/types/guitarra";
+import type { Categoria, Guitarra, GuitarraDetalle } from "@/types/guitarra";
 
 /*
  * Capa de acceso a datos (ARQ-01), sobre Prisma + PostgreSQL desde la Fase 8.
@@ -46,9 +46,16 @@ const seleccion = {
   categoria: { select: { nombre: true } },
 } satisfies Prisma.ProductoSelect;
 
-type FilaProducto = Prisma.ProductoGetPayload<{ select: typeof seleccion }>;
+/** El detalle añade el stock: lo necesita el botón «Añadir al carrito». */
+const seleccionDetalle = {
+  ...seleccion,
+  stock: true,
+} satisfies Prisma.ProductoSelect;
 
-function toGuitarra({ categoria, ...fila }: FilaProducto): Guitarra {
+function toGuitarra<T extends { categoria: { nombre: string } }>({
+  categoria,
+  ...fila
+}: T): Omit<T, "categoria"> & { categoria: string } {
   return { ...fila, categoria: categoria.nombre };
 }
 
@@ -66,15 +73,22 @@ export const getGuitarras = unstable_cache(
   { tags: [cacheTags.productos] },
 );
 
-/** Un producto publicado, o `null` si no existe o está inactivo. */
-export async function getGuitarraById(id: number): Promise<Guitarra | null> {
+/**
+ * Un producto publicado, con su stock, o `null` si no existe o está inactivo.
+ * El stock queda cacheado con el detalle: el carrito lo vuelve a consultar
+ * sin caché (lib/carrito.ts) y el checkout (Fase 11) lo comprueba al crear el
+ * pedido y revalida `producto:<id>`.
+ */
+export async function getGuitarraById(
+  id: number,
+): Promise<GuitarraDetalle | null> {
   if (!Number.isSafeInteger(id) || id < 1) return null;
 
   return unstable_cache(
-    async (): Promise<Guitarra | null> => {
+    async (): Promise<GuitarraDetalle | null> => {
       const fila = await prisma.producto.findFirst({
         where: { id, activo: true },
-        select: seleccion,
+        select: seleccionDetalle,
       });
       return fila ? toGuitarra(fila) : null;
     },
