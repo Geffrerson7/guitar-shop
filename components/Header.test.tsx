@@ -1,5 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { act, render as renderRtl, screen } from "@testing-library/react";
+import type { ReactElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { CarritoProvider } from "@/features/carrito/CarritoProvider";
+import { despachar, reiniciarParaPruebas } from "@/features/carrito/store";
 import Header from "./Header";
 
 const navigation = vi.hoisted(() => ({ pathname: "/" }));
@@ -8,6 +11,11 @@ vi.mock("next/navigation", () => ({
   usePathname: () => navigation.pathname,
 }));
 
+// Desde la Fase 10 el header lee el carrito.
+function render(ui: ReactElement) {
+  return renderRtl(<CarritoProvider>{ui}</CarritoProvider>);
+}
+
 function enlace(nombre: string) {
   return screen.getByRole("link", { name: nombre });
 }
@@ -15,6 +23,8 @@ function enlace(nombre: string) {
 describe("Header", () => {
   beforeEach(() => {
     navigation.pathname = "/";
+    localStorage.clear();
+    reiniciarParaPruebas();
   });
 
   it("expone una navegación principal etiquetada y la marca enlazada al inicio", () => {
@@ -52,5 +62,31 @@ describe("Header", () => {
     expect(catalogo).not.toHaveAttribute("aria-current");
     expect(catalogo).toHaveClass("text-ink");
     expect(catalogo).not.toHaveClass("text-ink-soft");
+  });
+
+  it("enlaza al carrito con un nombre accesible que incluye el contador", () => {
+    render(<Header />);
+
+    const carrito = screen.getByRole("link", { name: "Carrito, vacío" });
+    expect(carrito).toHaveAttribute("href", "/carrito");
+
+    act(() => {
+      despachar({ tipo: "agregar", productoId: 3, cantidad: 2 });
+    });
+
+    expect(
+      screen.getByRole("link", { name: "Carrito, 2 artículos" }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("contador-carrito")).toHaveTextContent("2");
+  });
+
+  it("marca el carrito como página actual en /carrito", () => {
+    navigation.pathname = "/carrito";
+    render(<Header />);
+
+    expect(screen.getByRole("link", { name: /^Carrito/ })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   });
 });

@@ -14,6 +14,8 @@ const rutas = [
   "/catalogo?pagina=2",
   "/catalogo?q=zzz",
   "/producto/3",
+  // Fase 10: carrito vacío (el lleno se audita en carrito.spec.ts).
+  "/carrito",
   "/acerca",
   "/contacto",
   "/no-existe",
